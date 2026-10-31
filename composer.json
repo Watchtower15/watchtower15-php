@@ -20,7 +20,10 @@
         "psr/log": "^1.1 || ^2.0 || ^3.0"
     },
     "suggest": {
-        "ext-zlib": "Lets the SDK gzip ingest bodies; without it plain JSON is sent"
+        "ext-zlib": "Lets the SDK gzip ingest bodies; without it plain JSON is sent",
+        "ext-apcu": "Lets ApcuStore keep minute buckets in shared memory (one host, one SAPI)",
+        "ext-redis": "Lets RedisStore use phpredis",
+        "predis/predis": "Lets RedisStore use Predis"
     },
     "bin": [
         "bin/watchtower15"

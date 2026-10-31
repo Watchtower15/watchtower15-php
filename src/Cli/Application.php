@@ -16,6 +16,9 @@ use WatchTower15\Internal\Clock;
 use WatchTower15\Internal\Environment;
 use WatchTower15\Internal\Json;
 use WatchTower15\Internal\SystemClock;
+use WatchTower15\Metrics\Aggregator;
+use WatchTower15\Metrics\FlushReport;
+use WatchTower15\Metrics\StoreScope;
 use WatchTower15\Package;
 
 /**
@@ -58,8 +61,11 @@ final class Application
         if ($command === '--version') {
             return $this->version();
         }
+        if ($command === 'flush') {
+            return $this->flush($flags);
+        }
         if ($command !== 'test') {
-            $this->err("Usage: watchtower15 test [--reachability] [--json]\n       watchtower15 --version");
+            $this->err("Usage: watchtower15 test [--reachability] [--json]\n       watchtower15 flush --bootstrap=<file> [--json]\n       watchtower15 --version");
 
             return $command === 'help' || $command === '--help' ? 0 : 2;
         }
@@ -73,6 +79,109 @@ final class Application
         $json = in_array('--json', $flags, true);
 
         return in_array('--reachability', $flags, true) ? $this->reachability($json) : $this->test($json);
+    }
+
+    /**
+     * One flush of the aggregator a bootstrap file returns: the cron entry.
+     *
+     * @param list<string> $flags
+     */
+    private function flush(array $flags): int
+    {
+        $json = false;
+        $bootstrap = null;
+        foreach ($flags as $flag) {
+            if ($flag === '--json') {
+                $json = true;
+            } elseif (str_starts_with($flag, '--bootstrap=')) {
+                $bootstrap = substr($flag, strlen('--bootstrap='));
+            } else {
+                $this->err('Unknown option ' . $flag);
+
+                return 2;
+            }
+        }
+        if ($bootstrap === null || trim($bootstrap) === '') {
+            $fromEnvironment = $this->environment['WT15_METRICS_BOOTSTRAP'] ?? '';
+            $bootstrap = trim($fromEnvironment) === '' ? null : $fromEnvironment;
+        }
+        if ($bootstrap === null) {
+            $this->err('flush needs --bootstrap=<file> (or WT15_METRICS_BOOTSTRAP): a PHP file that returns the Aggregator.');
+
+            return 2;
+        }
+        if (! is_file($bootstrap) || ! is_readable($bootstrap)) {
+            $this->err(sprintf('The bootstrap file %s does not exist or is not readable.', $bootstrap));
+
+            return 2;
+        }
+        try {
+            $aggregator = (static fn (string $file): mixed => require $file)($bootstrap);
+        } catch (\Throwable $e) {
+            $this->err(sprintf('The bootstrap file %s threw %s: %s', $bootstrap, $e::class, $e->getMessage()));
+
+            return 2;
+        }
+        if (! $aggregator instanceof Aggregator) {
+            $this->err(sprintf('The bootstrap file %s must return an Aggregator.', $bootstrap));
+
+            return 2;
+        }
+        $scope = $aggregator->store()->scope();
+        if ($scope === StoreScope::Process) {
+            $this->err('An in-memory store lives in one process; there is nothing to flush from here.');
+
+            return 2;
+        }
+        if ($scope === StoreScope::Sapi) {
+            $this->err('APCu is not shared between the CLI and PHP-FPM: flush from requests with PhpShutdownStrategy, or use RedisStore or FileStore.');
+
+            return 2;
+        }
+
+        $report = $aggregator->flush();
+        if ($json) {
+            $this->out(Json::encode($report->toArray()));
+        } else {
+            $this->printReport($report);
+        }
+
+        return $report->status === 'flushed' && $report->stopReason !== null && $report->stopReason !== 'max_requests' ? 1 : 0;
+    }
+
+    private function printReport(FlushReport $report): void
+    {
+        if ($report->status === 'disabled') {
+            $this->out('Metrics aggregation is disabled: nothing to flush.');
+
+            return;
+        }
+        if ($report->status === 'locked') {
+            $this->out('Another flush is running: nothing done.');
+
+            return;
+        }
+        $this->out(sprintf(
+            'Flushed: %d bucket(s) sent, %d empty, %d dropped; %d request(s), %d point(s) accepted, %d chunk(s) dropped.',
+            $report->bucketsSent,
+            $report->bucketsEmpty,
+            $report->bucketsDropped,
+            $report->requests,
+            $report->points,
+            $report->chunksDropped,
+        ));
+        if ($report->rejected !== []) {
+            $this->out('Rejected by the server: ' . Json::encode($report->rejected));
+        }
+        if ($report->stopReason !== null) {
+            $this->out('Stopped: ' . $report->stopReason);
+        }
+        if ($report->errors !== []) {
+            $this->out('Errors counted: ' . Json::encode($report->errors));
+        }
+        foreach ($report->configProblems as $problem) {
+            $this->out('Config: ' . $problem);
+        }
     }
 
     private function version(): int

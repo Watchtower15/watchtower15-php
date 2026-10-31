@@ -11,6 +11,7 @@ use Psr\Log\LoggerInterface;
 use WatchTower15\ConfigurationException;
 use WatchTower15\Exception\ApiConnectionException;
 use WatchTower15\Exception\ApiException;
+use WatchTower15\Exception\AuthenticationException;
 use WatchTower15\Exception\UnexpectedResponseException;
 use WatchTower15\Http\RequestOptions;
 use WatchTower15\Http\ResponseInfo;
@@ -60,6 +61,18 @@ final class Sender
     public function now(): \DateTimeImmutable
     {
         return $this->clock->now();
+    }
+
+    /**
+     * `sha256` of the credential, resolving a token provider when there is one.
+     *
+     * @throws ConfigurationException when the credential is not configured or a provider returns a bad token
+     */
+    public function tokenHash(string $kind): string
+    {
+        Requirement::credential($this->secrets, $kind);
+
+        return (string) Secrets::tokenHash($this->secrets, $kind, $this->clock->now()->getTimestamp());
     }
 
     public function lastResponse(): ?ResponseInfo
@@ -115,7 +128,7 @@ final class Sender
         $maxWait = $options->maxRetryWait ?? self::MAX_RATE_LIMIT_WAIT_SECONDS;
         $transportOptions = new TransportOptions($timeout, $connectTimeout);
 
-        $token = Secrets::get($this->secrets, $credential);
+        $token = Secrets::get($this->secrets, $credential, $this->clock->now()->getTimestamp());
         if ($token === null) {
             throw new ConfigurationException('No credential is configured for ' . $operation . '.');
         }
@@ -164,7 +177,12 @@ final class Sender
                 }
             }
 
-            throw ErrorMapper::map($response, $api, $operation);
+            $failure = ErrorMapper::map($response, $api, $operation);
+            if ($failure instanceof AuthenticationException && $credential === Secrets::METRICS) {
+                Secrets::forgetMemo($this->secrets);
+            }
+
+            throw $failure;
         }
     }
 

@@ -125,6 +125,114 @@ them. A stray invalid UTF-8 byte becomes U+FFFD. Lines are chunked (1,000 lines,
 metrics, with the per-call nonce; pass a caller key to re-run a push safely. On a host that runs the WatchTower15 agent, the
 agent's file tail is the better path for logs.
 
+## Metrics aggregator
+
+For counts and levels on the request path, without a request on the request path. `increment()` and `gauge()` write into a
+minute bucket in a store every process shares, in microseconds, and **never throw and never send**; a flush, once a minute,
+sends one request per closed bucket.
+
+```php
+use WatchTower15\Client;
+use WatchTower15\Lifecycle\PhpShutdownStrategy;
+use WatchTower15\Metrics\Aggregator;
+use WatchTower15\Store\RedisStore;
+
+$redis = new Redis();
+$redis->connect('127.0.0.1');
+
+$metrics = new Aggregator(
+    client: Client::fromEnvironment(),
+    store: new RedisStore($redis, prefix: 'myapp'),          // one prefix per application, no default
+    allowList: ['orders.shipped' => 'count', 'queue.depth' => 'level'],
+    heartbeat: 'myapp.flushes',
+);
+$metrics->registerShutdown(new PhpShutdownStrategy());       // or flush from cron, below
+
+$metrics->increment('orders.shipped');
+$metrics->gauge('queue.depth', 812);
+```
+
+* A count is the sum of its bucket; a level is the last value written in it. Every point carries `metric_type` and the bucket's
+  start as `recorded_at`. A key written both ways in one bucket sends the count and drops the level.
+* A bucket is **closed** 5 seconds after its minute ends. A flush sends the closed buckets, oldest first, within `maxRequests`
+  (10) requests and 90 seconds a run, one request per chunk of 1,000 points, with an `Idempotency-Key` frozen per bucket and
+  chunk: a resend after a timed-out success is stored once. There is no retry inside a run; the next run resends what was kept.
+* **Every outcome is named.** A refused token (401, 403), a redirect, a transport error, a throttle or a 5xx keeps the bucket and
+  stops the run; any other 4xx drops that chunk and goes on. The next run resends what was kept, for up to `maxBuckets`
+  (60) minutes; older buckets are dropped and counted.
+* **Never throws, counts instead.** The counters (`invalid_key`, `invalid_value`, `negative_count`, `not_allowed`, `type_conflict`,
+  `late_write`, `dropped_age`, `dropped_rejected`, `auth`, `config`, `transport`, `redirect`, `internal`, `store`) are kept in the
+  store and read by the next flush, which logs one warning (counts and reasons only, never a value or a token) when anything is
+  not zero. `late_write` means a write finished after its bucket's grace: the count is either lost (its bucket was already
+  flushed) or its bucket is stored twice (an earlier attempt landed with its answer lost). When the store itself is down, the
+  count is kept in the process only: under PHP-FPM it ends with the request, so a store that stays down shows only as the
+  heartbeat's silence.
+* **The heartbeat** adds 1 to a count key in every flush, so every flush sends something and a stopped pipe shows as silence an
+  alarm can see.
+* **The allow-list** keeps a typo from minting a billable metric: a key not in it, or used by the other method than its type,
+  is dropped and counted. It is off by default in the core.
+* **The token** is the same `metricsToken` as for `push()`: a string, or a `Metrics\TokenProvider` (for example
+  `new CallableTokenProvider(fn () => $vault->get('wt15-metrics'))`) that is called only when something is about to be sent, never
+  at construction, kept for at most 300 seconds, and forgotten when the token is refused.
+* `new Aggregator(..., enabled: false)` stores nothing, sends nothing and makes the flush a no-op that says so.
+
+### Stores and their scope
+
+| Store | Scope | Use it for |
+|---|---|---|
+| `Store\RedisStore` (phpredis or Predis) | the fleet | PHP-FPM on several servers. A single Redis or Valkey primary; **Redis Cluster is not supported**. A prefix is required: two applications on one Redis database must each name their own. |
+| `Store\ApcuStore` | one host, one SAPI | One PHP-FPM server. **APCu is not shared between PHP-FPM and the CLI**: a cron flush would read an empty store, so the CLI flush refuses it. A prefix is required: two PHP-FPM pools under one master share one APCu segment. |
+| `Store\FileStore` | one host | Bare PHP with neither: one JSON file per bucket under `flock` in a directory the web user and the cron user can both write (mode 0770, created at the first write). Local filesystems only, not NFS. |
+| `Store\InMemoryStore` | one process | Long-running workers, CLI scripts and tests. |
+
+### When to flush
+
+| Runtime | Store | Flush |
+|---|---|---|
+| PHP-FPM, several servers | `RedisStore` | cron `vendor/bin/watchtower15 flush` on one server, or `registerShutdown(new PhpShutdownStrategy())` on all (once a minute for the fleet) |
+| PHP-FPM, one server | `RedisStore` or `FileStore` (cron), or `ApcuStore` (`registerShutdown()` only) | as above; with APCu a minute with no request flushes at the next request |
+| Apache mod_php, or any SAPI with neither `fastcgi_finish_request()` nor `litespeed_finish_request()` | `RedisStore` or `FileStore` | cron: an after-response flush there holds the response until it ends |
+| Long-running worker | `InMemoryStore` or a shared one | `flushIfDue()` in the loop; `registerShutdown()` for the final flush |
+| CLI script, cron job | `InMemoryStore` | `registerShutdown()`: a final flush at exit; or `push()` |
+| Serverless | none | `push()` at the end of the invocation: minute buckets do not fit a frozen process |
+
+```bash
+# crontab: a bootstrap file that returns the Aggregator
+* * * * * cd /app && vendor/bin/watchtower15 flush --bootstrap=config/wt15-metrics.php
+```
+
+The bootstrap path may also come from `WT15_METRICS_BOOTSTRAP`. `flush` exits 0 for a clean run, a disabled aggregator, another
+flush running, or a run that stopped at its request cap; 1 for any other stop reason; and 2 when it cannot start: no bootstrap, a
+file that does not exist, throws, or returns anything but an `Aggregator`, or a store the CLI cannot see (in-memory, APCu).
+`--json` prints the `FlushReport`.
+
+### Things to know about the after-response flush
+
+* `fastcgi_finish_request()` (and LiteSpeed's `litespeed_finish_request()`) ends the response but not the request, so an open PHP
+  session stays locked during the flush.
+* Under a SAPI with neither function (Apache's mod_php among them) an after-response flush holds that response until it ends: flush
+  from cron there.
+* `PhpShutdownStrategy` flushes after every other shutdown function, the application's own later ones included; a shutdown
+  function that calls `exit()` stops PHP's queue, the flush with it.
+* `registerShutdown()` on an `InMemoryStore` under `fpm-fcgi` sends one request per page view.
+* Under PHP-FPM a pool's `request_terminate_timeout` must be above the flush's worst case (`maxRequests × (timeout + connectTimeout)`,
+  40 s at the defaults; up to about 100 s when one bucket holds more chunks than `maxRequests`), or the worker is killed in the
+  middle of an after-response flush: the buckets are kept, but a `RedisStore` or `ApcuStore` lock stays held for its 120 s, so the
+  next minute reports `locked`. Set it above that, or flush from cron.
+* An aggregator whose `Client` uses a PSR-18 client (`Psr18Transport`) must set a timeout of at most 10 s on that client, or use a
+  `Client` of its own on the default transport; a slow ingest would otherwise outlive the flush's 120 s lock.
+* Hosts that share a `RedisStore` need clocks within the 5-second grace (NTP): a host whose clock runs behind can write into a
+  bucket a faster host has already flushed, and the count is lost with no `late_write`.
+* A metric token rotated between an attempt whose answer was lost and its resend changes that bucket's key (the token's hash is in
+  it), so the server stores the bucket twice.
+* The per-metric budget of 100,000 points a day (about 69 a minute) caps how many per-host stores can push one key.
+
+### Test your own code
+
+`Testing\FakeAggregator` is built with no arguments, records `increment()` and `gauge()`, and its `flush()` pushes every bucket, the
+open one included, into its own `FakeClient`: `assertIncremented('orders.shipped', 3)`, `assertNotIncremented()`,
+`assertGaugeSet()`, `assertNothingRecorded()`, `client()`.
+
 ## Errors
 
 Everything the SDK throws for a call implements `WatchTower15\Exception\WatchTower15Exception`.
@@ -209,7 +317,6 @@ contact@watchtower15.com with the subject "Security".
 
 ## What is not in this release
 
-The metric aggregator, the log handler, the generated `/v1` surface and the framework bridges (Laravel, Symfony, CakePHP)
-arrive in later releases. Everything under `Internal\` and every member marked `@internal` is outside semantic versioning.
+The log handler, the generated `/v1` surface and the framework bridges (Laravel, Symfony, CakePHP) arrive in later releases. Everything under `Internal\` and every member marked `@internal` is outside semantic versioning.
 
 MIT licence.
