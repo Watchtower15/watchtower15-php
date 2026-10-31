@@ -10,8 +10,21 @@
     },
     "require": {
         "php": "^8.3",
-        "composer-runtime-api": "^2.2"
+        "ext-curl": "*",
+        "ext-json": "*",
+        "composer-runtime-api": "^2.2",
+        "guzzlehttp/psr7": "^2.7",
+        "psr/http-client": "^1.0",
+        "psr/http-factory": "^1.0",
+        "psr/http-message": "^1.1 || ^2.0",
+        "psr/log": "^1.1 || ^2.0 || ^3.0"
     },
+    "suggest": {
+        "ext-zlib": "Lets the SDK gzip ingest bodies; without it plain JSON is sent"
+    },
+    "bin": [
+        "bin/watchtower15"
+    ],
     "autoload": {
         "psr-4": {
             "WatchTower15\\": "src/"

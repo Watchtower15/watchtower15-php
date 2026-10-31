@@ -1,0 +1,32 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+$candidates = [
+    $GLOBALS['_composer_autoload_path'] ?? null,
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/../../../autoload.php',
+];
+$loaded = false;
+foreach ($candidates as $autoload) {
+    if (is_string($autoload) && is_file($autoload)) {
+        require $autoload;
+        $loaded = true;
+
+        break;
+    }
+}
+if (! $loaded) {
+    fwrite(STDERR, "watchtower15: cannot find Composer's autoloader.\n");
+    exit(2);
+}
+
+$environment = [];
+foreach (array_merge(getenv(), $_SERVER) as $name => $value) {
+    if (is_string($name) && is_string($value)) {
+        $environment[$name] = $value;
+    }
+}
+
+exit((new WatchTower15\Cli\Application($environment, STDOUT, STDERR))->run(array_slice($argv, 1)));
