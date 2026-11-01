@@ -75,6 +75,14 @@ final class Sender
         return (string) Secrets::tokenHash($this->secrets, $kind, $this->clock->now()->getTimestamp());
     }
 
+    /**
+     * `sha256` of the credential, or null when none is configured; never throws for a missing credential.
+     */
+    public function tokenHashOrNull(string $kind): ?string
+    {
+        return Secrets::tokenHash($this->secrets, $kind, $this->clock->now()->getTimestamp());
+    }
+
     public function lastResponse(): ?ResponseInfo
     {
         return $this->last;

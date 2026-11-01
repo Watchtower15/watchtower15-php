@@ -310,6 +310,106 @@ Pass any PSR-18 client as `httpClient`. The SDK then uses its timeouts and redir
 can follow a redirect. To implement `Http\Transport` yourself, mark `send()`'s `$request` parameter
 `#[\SensitiveParameter]` and never chain an exception that holds the request (its `Authorization` header is a credential).
 
+## Logs
+
+The SDK sends application logs to WatchTower15 log ingest through the logging you already have. On a host that runs the WatchTower15
+agent, **the agent's file tail is the better path**: no token in the application and no HTTP from PHP. Use this where it does not run.
+
+### With Monolog 3
+
+```php
+use Monolog\Handler\BufferHandler;
+use Monolog\Logger;
+use Monolog\Processor\PsrLogMessageProcessor;
+use WatchTower15\Client;
+use WatchTower15\Logs\Monolog\WatchTower15Handler;
+
+$wt15 = Client::fromEnvironment();                 // WT15_LOGS_TOKEN
+$log = new Logger('billing');
+$log->pushProcessor(new PsrLogMessageProcessor());  // {placeholders} replaced, as Laravel's channels do
+$log->pushHandler(new BufferHandler(
+    new WatchTower15Handler($wt15, selfLogger: $otherLogger),   // a logger that does not hold this handler
+    100,
+    flushOnOverflow: true,
+));
+```
+
+`composer require monolog/monolog` yourself: Monolog 3 is a suggestion of this package, not a requirement, and the handler's
+signatures name Monolog 3's `LogRecord`. For a Monolog 2 application, use Monolog's own `PsrHandler` over the `Psr3Logger` below.
+
+* One line per record: `message` is the record formatted by the handler's formatter (by default `%message% %context% %extra%`, with
+  the exception's trace), `log_level` the record's level unchanged (Monolog's eight levels are ingest's eight), `logged_at` the
+  record's time, `stream_name` the handler's `stream` option or else the record's channel. A stream name that does not match ingest's
+  pattern (`^[A-Za-z0-9._/@:+-]{1,255}$`) is left out, so the source's own name applies. A blank message is dropped.
+* **Wrap the handler in `BufferHandler`**, so a request's lines go in one push. The handler's own level and its processors hold on
+  that batch path. Unwrapped, it sends each record as it is logged.
+* The push waits for the response to end: `fastcgi_finish_request()` (PHP-FPM, FrankenPHP) or `litespeed_finish_request()` ends it
+  first. Under mod_php neither exists and the push holds the response for its round trip, up to about 8 s when ingest fails: use the
+  agent's file tail there. (The response ends, the request does not: an open PHP session stays locked during the push.)
+* Two runtimes have no end of request to wait for. On **serverless** (AWS Lambda through Bref, for one) the platform may freeze the
+  environment once the invocation has answered, so flush before it answers (`BufferHandler::close()` or the `Psr3Logger`'s `flush()`);
+  the push then counts in the invocation's time. In a **long-running loop** (RoadRunner, FrankenPHP's worker mode, a consumer script)
+  shutdown functions run only at exit: call `flush()` after each unit of work.
+
+### Without Monolog
+
+```php
+use WatchTower15\Logs\Psr3Logger;
+
+$logger = new Psr3Logger($wt15, stream: 'billing', selfLogger: $otherLogger, bufferLimit: 100);
+$logger->error('Payment failed for {order}', ['order' => 42, 'exception' => $e]);
+```
+
+A PSR-3 logger that buffers lines and sends them at `bufferLimit` lines, on `flush()`, at the end of the request after the response and
+on destruct. A message has its `{placeholders}` interpolated from scalar and `Stringable` context values, then the context as one JSON
+object after a space (values JSON cannot encode become `[resource]`, `[object <class>]` or `0`, and an invalid byte U+FFFD), then an
+`exception` in the context with its trace. An unknown level throws PSR-3's `InvalidArgumentException`; nothing else throws.
+
+### Bounds, the stop and the hold
+
+Every push passes per-call options: a 3 s timeout, a 1 s connect timeout, one retry and no wait above 2 s. They hold on the SDK's default
+cURL transport and the framework bridges' own; on `Psr18Transport` the timeouts are your PSR-18 client's, so give it a timeout of at most
+3 s and a connect timeout of at most 1 s (or hand the handler a `Client` of its own on the default transport). A retried push is stored
+and billed once: it carries the same `Idempotency-Key`.
+
+A failing ingest must not tie up your workers, so a **per-host breaker** remembers it:
+
+* The **volume stop** (the organisation reached its log volume limit) lasts the answer's `Retry-After` (at most an hour), and is
+  re-checked hourly.
+* A **hold** of a minute follows an unreachable ingest, a 5xx, a 403 (a revoked token) or the per-token throttle (for its
+  `Retry-After`).
+* While either is open the lines are dropped without a request. When it ends, **one** push probes ingest while the host's other
+  sends still wait.
+
+The breaker lives in files (`wt15-logs-<sha256 of the token>.breaker`, mode 0644) under the system temporary directory, shared by
+every PHP-FPM worker of the host. **Every user that runs the application (PHP-FPM, cron, a deploy user) must be able to write that
+directory**: a file another user wrote in the sticky temporary directory can be read but neither replaced nor deleted, and that user's
+holds are never written. Give all of them one directory, or pass each a `FileBreakerStore($directory)`. Use **one directory per
+application**: applications that share one share the report times of `config` and `missing_token`, so one's hourly report silences
+another's. `InMemoryBreakerStore` serves one process and tests.
+
+### Failures are counted, never thrown
+
+Nothing reaches your application and nothing is logged through the handler itself. Lines that are not sent are counted by reason
+(`config`, `missing_token`, `invalid_payload`, `volume_limit`, `rate_limited`, `held`, `connection`, `rejected_<status>`,
+`internal`), and **at most one report per flush** goes to the `selfLogger` at `warning`:
+
+```
+WatchTower15 logs: lines not sent: rejected_503 12, invalid_payload 1
+```
+
+with `wt15_report` `true`, `wt15_lines` (each reason with its lines) and, when the flush opened a stop or a hold, `wt15_until` (RFC 3339
+UTC with milliseconds) in its context. Alert on those. A standing condition (`missing_token`, `config`, `held`, a stop that is open,
+a wrong ingest URL) is reported at most once an hour per host. The `selfLogger` must **never** be a logger that holds this handler;
+a `Client` whose `logger` routes to the handler would ship the SDK's own retry notices as lines (records that carry `wt15_level` or
+`wt15_report` are dropped, but only for loggers the SDK knows).
+
+### The ingest limit
+
+Log ingest takes 600 pushes a minute per token, and the SDK sends one push per request, job or command that logs at or above the
+channel's level (more past `bufferLimit`), from every host on that token. Above about ten logging requests a second per token, lines
+are lost: raise the channel's level, use a token per service, or use the agent's file tail. Keep secrets out of log context.
+
 ## Security
 
 API keys are personal: keep them in the environment or a secrets store, never in code. Report a vulnerability to
@@ -317,6 +417,6 @@ contact@watchtower15.com with the subject "Security".
 
 ## What is not in this release
 
-The log handler, the generated `/v1` surface and the framework bridges (Laravel, Symfony, CakePHP) arrive in later releases. Everything under `Internal\` and every member marked `@internal` is outside semantic versioning.
+The generated `/v1` surface and the framework bridges for Symfony and CakePHP arrive in later releases. Everything under `Internal\` and every member marked `@internal` is outside semantic versioning.
 
 MIT licence.

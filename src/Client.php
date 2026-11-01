@@ -227,6 +227,16 @@ class Client
     }
 
     /** @internal */
+    /**
+     * The SHA-256 of the logs token in lower-case hex, never the token; null when the `Client` has no logs token.
+     *
+     * @internal
+     */
+    public function logsTokenHash(): ?string
+    {
+        return $this->sender->tokenHashOrNull(Secrets::LOGS);
+    }
+
     public function sender(): Sender
     {
         return $this->sender;
