@@ -82,7 +82,7 @@ final class ChunkPusher
         }
         $chunks[] = ['json' => $open . implode(',', $current) . ']}', 'count' => count($current), 'backfill' => $old];
 
-        $tokenHash = (string) Secrets::tokenHash($secrets, $credential);
+        $tokenHash = $sender->tokenHash($credential);
         $nonce = bin2hex(random_bytes(16));
         $total = count($chunks);
 

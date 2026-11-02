@@ -28,6 +28,7 @@ use WatchTower15\Internal\Sender;
 use WatchTower15\Internal\Sleeper;
 use WatchTower15\Internal\SystemClock;
 use WatchTower15\Internal\SystemSleeper;
+use WatchTower15\Metrics\TokenProvider;
 
 /**
  * The WatchTower15 client: three credentials, one transport, typed errors and safe retries.
@@ -66,9 +67,11 @@ class Client
 
     private readonly ?string $appInfo;
 
+    private readonly LoggerInterface $logger;
+
     public function __construct(
         #[\SensitiveParameter] ?string $apiKey = null,
-        #[\SensitiveParameter] ?string $metricsToken = null,
+        #[\SensitiveParameter] string|TokenProvider|null $metricsToken = null,
         #[\SensitiveParameter] ?string $logsToken = null,
         string $apiUrl = self::DEFAULT_API_URL,
         string $ingestUrl = self::DEFAULT_INGEST_URL,
@@ -93,7 +96,7 @@ class Client
         }
 
         $apiKey = self::credential($apiKey, 'apiKey', 'api_key');
-        $metricsToken = self::credential($metricsToken, 'metricsToken', 'metrics_token');
+        $metricsToken = is_string($metricsToken) ? self::credential($metricsToken, 'metricsToken', 'metrics_token') : $metricsToken;
         $logsToken = self::credential($logsToken, 'logsToken', 'logs_token');
 
         $this->apiUrl = self::baseUrl($apiUrl, 'apiUrl');
@@ -102,6 +105,7 @@ class Client
         $this->connectTimeout = $connectTimeout;
         $this->maxRetries = $maxRetries;
         $this->appInfo = $appInfo;
+        $this->logger = $logger ?? new NullLogger();
 
         $this->secrets = new SecretsHandle();
         Secrets::store($this->secrets, $apiKey, $metricsToken, $logsToken);
@@ -114,7 +118,7 @@ class Client
         $this->sender = new Sender(
             $this->secrets,
             $transport,
-            $logger ?? new NullLogger(),
+            $this->logger,
             new SystemClock(),
             new SystemSleeper(),
             $timeout,
@@ -229,6 +233,34 @@ class Client
     }
 
     /** @internal */
+    public function logger(): LoggerInterface
+    {
+        return $this->logger;
+    }
+
+    /**
+     * The SHA-256 of the metric token, resolving a provider when there is one (for the flush's frozen key).
+     *
+     * @internal
+     *
+     * @throws ConfigurationException when no token is configured or a provider returns a bad one
+     */
+    public function metricsTokenHash(): string
+    {
+        return $this->sender->tokenHash(Secrets::METRICS);
+    }
+
+    /** @internal */
+    /**
+     * The SHA-256 of the logs token in lower-case hex, never the token; null when the `Client` has no logs token.
+     *
+     * @internal
+     */
+    public function logsTokenHash(): ?string
+    {
+        return $this->sender->tokenHashOrNull(Secrets::LOGS);
+    }
+
     public function sender(): Sender
     {
         return $this->sender;

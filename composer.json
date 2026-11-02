@@ -13,14 +13,18 @@
         "ext-curl": "*",
         "ext-json": "*",
         "composer-runtime-api": "^2.2",
-        "guzzlehttp/psr7": "^2.7",
+        "guzzlehttp/psr7": "^2.7 || ^3.0",
         "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0",
         "psr/http-message": "^1.1 || ^2.0",
         "psr/log": "^1.1 || ^2.0 || ^3.0"
     },
     "suggest": {
-        "ext-zlib": "Lets the SDK gzip ingest bodies; without it plain JSON is sent"
+        "ext-apcu": "Lets ApcuStore keep minute buckets in shared memory (one host, one SAPI)",
+        "ext-redis": "Lets RedisStore use phpredis",
+        "ext-zlib": "Lets the SDK gzip ingest bodies; without it plain JSON is sent",
+        "monolog/monolog": "Lets WatchTower15\\Logs\\Monolog\\WatchTower15Handler send Monolog records to log ingest (^3)",
+        "predis/predis": "Lets RedisStore use Predis"
     },
     "bin": [
         "bin/watchtower15"
