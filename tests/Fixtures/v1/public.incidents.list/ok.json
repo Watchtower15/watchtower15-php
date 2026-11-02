@@ -1,0 +1,36 @@
+{
+  "data": [
+    {
+      "uuid": "5f0c2e8a-1b0d-4c7e-9a52-0d3f6b8e4a11",
+      "status": "x",
+      "severity": "x",
+      "message": "x",
+      "rule_name": "x",
+      "rule_slug": null,
+      "metric_name": null,
+      "scan_type": null,
+      "entity": {
+        "type": null,
+        "uuid": null,
+        "name": null
+      },
+      "parent_entity": {
+        "type": "x",
+        "uuid": "5f0c2e8a-1b0d-4c7e-9a52-0d3f6b8e4a11"
+      },
+      "triggered_at": 1798761600000,
+      "acknowledged_at": 1798761600000,
+      "acknowledged_by": {
+        "name": "x"
+      },
+      "resolved_at": 1798761600000,
+      "resolved_by": {
+        "name": "x"
+      },
+      "resolved_by_system": true,
+      "console_url": "x"
+    }
+  ],
+  "next_cursor": null,
+  "total": 1
+}

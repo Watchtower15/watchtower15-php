@@ -1,0 +1,45 @@
+{
+  "data": {
+    "generated_at": 1798761600000,
+    "servers": {
+      "available": true,
+      "active": 1,
+      "warning": 1,
+      "critical": 1,
+      "seen_last_5m": 1,
+      "seen_last_1h": 1
+    },
+    "domains": {
+      "available": true,
+      "active": 1,
+      "warning": 1,
+      "critical": 1
+    },
+    "services": {
+      "available": true,
+      "active": 1,
+      "warning": 1,
+      "critical": 1
+    },
+    "log_sources": {
+      "available": true,
+      "active": 1,
+      "warning": 1,
+      "critical": 1,
+      "received_last_5m": 1,
+      "received_last_1h": 1
+    },
+    "scans": {
+      "domains": {
+        "available": true,
+        "last_1h": 1,
+        "last_24h": 1
+      },
+      "services": {
+        "available": true,
+        "last_1h": 1,
+        "last_24h": 1
+      }
+    }
+  }
+}

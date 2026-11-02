@@ -1,0 +1,28 @@
+{
+  "data": [
+    {
+      "uuid": "5f0c2e8a-1b0d-4c7e-9a52-0d3f6b8e4a11",
+      "name": "x",
+      "hostname": "x",
+      "ip_address": "x",
+      "os_type": "x",
+      "health_status": "x",
+      "agent_status": "x",
+      "pending_reason": "x",
+      "connectivity_state": "x",
+      "agent_version": "x",
+      "agent_last_seen_at": 1798761600000,
+      "active": true,
+      "archived_at": 1798761600000,
+      "tags": [
+        {
+          "uuid": "5f0c2e8a-1b0d-4c7e-9a52-0d3f6b8e4a11",
+          "name": "x"
+        }
+      ],
+      "console_url": "x"
+    }
+  ],
+  "next_cursor": null,
+  "total": 1
+}

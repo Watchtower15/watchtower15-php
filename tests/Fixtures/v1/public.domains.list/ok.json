@@ -1,0 +1,28 @@
+{
+  "data": [
+    {
+      "uuid": "5f0c2e8a-1b0d-4c7e-9a52-0d3f6b8e4a11",
+      "name": "x",
+      "domain_type": "x",
+      "status": "suspended",
+      "health_status": "x",
+      "active": true,
+      "registrar": "x",
+      "expiry_date": "x",
+      "ssl_status": "x",
+      "ssl_expiry_date": 1798761600000,
+      "dns_last_changed_at": 1798761600000,
+      "uptime_7d_percent": 1.5,
+      "scans_enabled": {
+        "expiry": true,
+        "dns": true,
+        "ssl": true,
+        "whois": true,
+        "reachability": true
+      },
+      "console_url": "x"
+    }
+  ],
+  "next_cursor": null,
+  "total": 1
+}

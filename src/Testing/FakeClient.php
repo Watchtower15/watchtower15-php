@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WatchTower15\Testing;
 
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use WatchTower15\Client;
 use WatchTower15\Internal\Json;
@@ -17,15 +18,35 @@ class FakeClient extends Client
 {
     private readonly MockTransport $mock;
 
-    /** @var list<string> */
-    private array $queuedOperations = [];
+    private readonly FakeTime $time;
+
+    /** @var array<string, list<ResponseInterface|\Throwable>> answers queued by operation */
+    private array $queues = [];
+
+    /** @var list<string> the operation of each request the transport saw, in order (a retry is a request) */
+    private array $observed = [];
+
+    private ?string $current = null;
 
     public function __construct()
     {
         $mock = new MockTransport();
-        $mock->fallback(static function ($request) {
+        $mock->fallback(function (RequestInterface $request): ?ResponseInterface {
+            $operation = $this->current;
+            if ($operation !== null && ($this->queues[$operation] ?? []) !== []) {
+                $next = array_shift($this->queues[$operation]);
+                if ($next instanceof \Throwable) {
+                    throw $next;
+                }
+
+                return $next;
+            }
             $path = $request->getUri()->getPath();
             if ($request->getMethod() !== 'POST' || ! (str_ends_with($path, '/api/metric-sources/ingest') || str_ends_with($path, '/api/log-sources/ingest'))) {
+                if ($operation !== null) {
+                    throw new \LogicException(sprintf('FakeClient has no answer queued for %s.', $operation));
+                }
+
                 return null;
             }
             $raw = (string) $request->getBody();
@@ -47,13 +68,28 @@ class FakeClient extends Client
             logsToken: 'wt15ls_' . str_repeat('0', 64),
             httpClient: $mock,
         );
+        $this->time = new FakeTime();
+        $this->useTimeSeams($this->time, $this->time);
+        $this->sender()->observeOperations(function (string $operation): void {
+            $this->current = $operation;
+            $this->observed[] = $operation;
+        });
     }
 
-    /** Queues an answer for an operation the fake does not answer itself (`public.me.view`, `ingest.metrics.list`). */
+    /** The fake clock and sleeper the waiter and `autoPaging()` run on: sleeping advances it and never waits. */
+    public function time(): FakeTime
+    {
+        return $this->time;
+    }
+
+    /**
+     * Queues an answer for an operation: a generated one by its `operationId` (`public.servers.list`), `public.me.view`,
+     * `ingest.metrics.list`, or `request()` as `request:<METHOD> <path as given>`. Answers of one operation are used in order;
+     * a call with nothing queued for its operation throws a `\LogicException` naming it (pushes are answered by the fake itself).
+     */
     public function queue(string $operation, ResponseInterface|\Throwable $response): self
     {
-        $this->queuedOperations[] = $operation;
-        $this->mock->append($response);
+        $this->queues[$operation][] = $response;
 
         return $this;
     }
@@ -67,10 +103,8 @@ class FakeClient extends Client
     public function calls(): array
     {
         $calls = [];
-        $queued = $this->queuedOperations;
-        foreach ($this->mock->requests() as $request) {
-            $operation = self::operationOf($request) ?? array_shift($queued) ?? 'unknown';
-            $calls[] = new RecordedCall($operation, $request);
+        foreach ($this->mock->requests() as $index => $request) {
+            $calls[] = new RecordedCall($this->observed[$index] ?? self::operationOf($request) ?? 'unknown', $request);
         }
 
         return $calls;

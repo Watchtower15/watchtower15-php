@@ -52,6 +52,7 @@ final class MetricsPublisher
         }
         Requirement::credential($this->secrets, Secrets::METRICS);
         $options = RequestOptions::from($options);
+        $options->refuseIdempotencyKey('idempotencyKey');
         $now = $this->sender->now();
         $cutoff = $now->getTimestamp() - self::BACKFILL_AGE_DAYS * 86400;
 
@@ -119,7 +120,7 @@ final class MetricsPublisher
             RetryPolicy::Read,
             null,
             [],
-            RequestOptions::from($options),
+            self::withoutKey($options),
         );
 
         return MetricSourceListing::fromData($answer->data());
@@ -147,5 +148,16 @@ final class MetricsPublisher
         }
 
         return null;
+    }
+
+    /**
+     * @param RequestOptions|array<string, mixed>|null $options
+     */
+    private static function withoutKey(RequestOptions|array|null $options): RequestOptions
+    {
+        $options = RequestOptions::from($options);
+        $options->refuseIdempotencyKey();
+
+        return $options;
     }
 }

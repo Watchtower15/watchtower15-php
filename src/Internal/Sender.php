@@ -38,6 +38,9 @@ final class Sender
 
     private ?string $userAgent = null;
 
+    /** @var (\Closure(string): void)|null */
+    private ?\Closure $observer = null;
+
     public function __construct(
         private readonly SecretsHandle $secrets,
         private readonly Transport $transport,
@@ -60,6 +63,23 @@ final class Sender
     public function now(): \DateTimeImmutable
     {
         return $this->clock->now();
+    }
+
+    /** Waits through the client's sleeper (a fake one in tests never waits). */
+    public function sleep(float $seconds): void
+    {
+        $this->sleeper->sleep($seconds);
+    }
+
+    /**
+     * Called with the operation name just before each request is handed to the transport (each retry included), so a test
+     * double can tell which operation a request belongs to.
+     *
+     * @param (\Closure(string): void)|null $observer
+     */
+    public function observeOperations(?\Closure $observer): void
+    {
+        $this->observer = $observer;
     }
 
     public function lastResponse(): ?ResponseInfo
@@ -124,6 +144,9 @@ final class Sender
         $attempt = 0;
         while (true) {
             $attempt++;
+            if ($this->observer !== null) {
+                ($this->observer)($operation);
+            }
             try {
                 $response = $this->transport->send($request, $transportOptions);
             } catch (ApiConnectionException $e) {
@@ -176,6 +199,9 @@ final class Sender
     public function probe(string $operation, string $url): ResponseInfoAndResponse
     {
         $request = new Request('GET', $url, ['User-Agent' => $this->userAgent(), 'Accept' => 'application/json']);
+        if ($this->observer !== null) {
+            ($this->observer)($operation);
+        }
         try {
             $response = $this->transport->send($request, new TransportOptions($this->timeout, $this->connectTimeout));
         } catch (ApiConnectionException $e) {

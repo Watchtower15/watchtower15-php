@@ -180,6 +180,98 @@ no read-only call, and a test push would store a line). It reports the clock ske
 every check passed, 1 when one failed or was not reached, 2 when nothing is configured or a variable is malformed. The
 command reads only the process environment, never a framework's `.env` file: export the variables first.
 
+## Public API
+
+Every `/v1` operation is a method on a service named after its area: `$wt15->servers->list()`,
+`$wt15->domains->runScan($domainUuid, 'ssl')`, `$wt15->incidents->acknowledge($incidentUuid)`. The method is the action of
+the operation's id (`public.servers.systemServices` is `$wt15->servers->systemServices($serverUuid)`), the services are
+`alarms`, `customMetrics`, `databases`, `domains`, `health`, `incidents`, `logs`, `scans`, `servers`, `services` and
+`tags`, and `me()` stays on the client.
+
+```php
+$wt15 = WatchTower15\Client::fromEnvironment();
+
+$page = $wt15->servers->list(['health' => ['critical', 'warning'], 'limit' => 50, 'include_total' => true]);
+foreach ($page->data as $server) {
+    echo $server->name, ' ', $server->healthStatus, ' last seen ', $server->agentLastSeenAt?->format('c'), "\n";
+}
+echo $page->total, ' servers; more: ', $page->hasMore() ? 'yes' : 'no';
+
+$metrics = $wt15->servers->metrics($serverUuid, ['family' => 'cpu', 'period' => '1h']);
+```
+
+**Arguments.** The ids in the path come first, as strings. The filters are one `$params` array, whose keys your IDE and
+PHPStan know (an array shape per method); `$params` is there even for an operation with no filter yet, so the filter the API
+adds later changes no signature. The per-call `$options` come last, as for `me()`. A filter newer than the SDK is sent as
+you give it.
+
+**Models.** An answer is a readonly object with typed properties (`$server->uuid`, `$server->agentLastSeenAt`). A time is a
+UTC `DateTimeImmutable`. A value that can be one of a set of words stays a string, so a word the API adds later never
+breaks your code; beside it, an enum of the words known today (`WatchTower15\Api\Generated\Enums\ServersMetricsFamily`)
+helps you compare. `toArray()` returns exactly what the server sent, fields newer than the SDK included.
+
+**Paging.** A list is a `Page`: `data`, `nextCursor`, `meta` and `total` (only with `include_total`). `autoPaging()` walks
+every item of every page and fetches the next page only when you reach it:
+
+```php
+foreach ($wt15->servers->list(['limit' => 100, 'sort' => 'name'])->autoPaging() as $server) {
+    // ...
+}
+```
+
+When a response says the rate limit is spent, `autoPaging()` waits for its reset if that is at most `max_retry_wait`
+seconds away (60 unless you set it) and otherwise throws `RateLimitException` (`getRetryAfter()`), without sending a request
+that could only earn a 429.
+
+**Writes.** `acknowledge`, `resolve` and `runScan` send an `Idempotency-Key`, a random one unless you give your own
+(`['idempotency_key' => 'ack-2026-11-01-42']`, 1 to 255 visible ASCII characters). A retry sends the same key, so a write
+retries like a read, and an answer replayed from the first try (`$wt15->lastResponse()->replayed`) is a success.
+
+**Waiting for a scan.** `runScan` answers at once with a scan that is `queued`:
+
+```php
+$scan = $wt15->domains->runScan($domainUuid, 'ssl');
+$done = $wt15->scans->waitUntilFinished($scan->scanUuid, timeoutSeconds: 120, pollSeconds: 5);
+echo $done->status;   // completed, failed or timeout; a status added later ends the wait too
+```
+
+Past the timeout it throws `WaiterTimeoutException`, whose `scan()` is the last scan read.
+
+**An operation newer than this SDK.** `request()` calls it with the same key, retries, errors and `lastResponse()`:
+
+```php
+$envelope = $wt15->request('GET', '/servers/{server_uuid}/ports', ['server_uuid' => $serverUuid, 'limit' => 5]);
+$ports = $envelope['data'];
+```
+
+`{name}` placeholders are filled from the array and URL-encoded, the rest goes to the query (GET, DELETE) or a JSON body.
+A path that is not under `/v1`, a placeholder left unfilled or an unknown method is refused with `ConfigurationException`
+before anything is sent.
+
+**Errors.** Everything the SDK throws implements `WatchTower15Exception`; a refusal before sending (`ConfigurationException`:
+a bad argument, option or path) and an answer the API gave (`ApiException` and its subclasses, by status) are separate
+classes, so `catch (ApiException)` handles the API's answers and `catch (WatchTower15Exception)` handles everything.
+
+**Test your own code.** `FakeClient` answers and records every method above, the waiter and `request()`, with no network.
+Queue an answer by the operation's id, then assert on it. The fake never sleeps: the waiter's polls and the paging's waits run
+on a clock that only moves forward.
+
+```php
+use WatchTower15\Testing\FakeClient;
+use WatchTower15\Testing\MockTransport;
+
+$fake = new FakeClient();
+$fake->queue('public.servers.list', MockTransport::json(['data' => [$serverRow], 'next_cursor' => null]));
+
+$names = (new Inventory($fake))->serverNames();   // your code, typed against Client
+
+$fake->assertCalled('public.servers.list');
+$fake->assertNotCalled('public.incidents.acknowledge');
+```
+
+A call with nothing queued for its operation throws a `LogicException` naming it. `queue('request:GET /servers/{server_uuid}/ports', ...)`
+answers a `request()` call by the path as you wrote it.
+
 ## Test your own code
 
 ```php

@@ -1,0 +1,69 @@
+{
+  "data": {
+    "uuid": "5f0c2e8a-1b0d-4c7e-9a52-0d3f6b8e4a11",
+    "name": "x",
+    "hostname": "x",
+    "ip_address": "x",
+    "os_type": "x",
+    "os_name": "x",
+    "os_version": "x",
+    "kernel_version": "x",
+    "cpu_model": "x",
+    "cpu_cores": 1,
+    "total_memory_mb": 1,
+    "booted_at": 1798761600000,
+    "timezone": "x",
+    "utc_offset_seconds": 1,
+    "in_container": true,
+    "health_status": "x",
+    "active": true,
+    "archived_at": 1798761600000,
+    "agent": {
+      "status": "x",
+      "version": "x",
+      "capabilities": [
+        "x"
+      ],
+      "last_seen_at": 1798761600000,
+      "connectivity_state": "x"
+    },
+    "disks": [
+      {
+        "mount_point": "x",
+        "device": "x",
+        "filesystem_type": "x",
+        "total_gb": 1.5,
+        "used_gb": 1.5,
+        "free_gb": 1.5,
+        "used_percent": 1.5,
+        "inodes_used_percent": 1.5
+      }
+    ],
+    "network_interfaces": [
+      {
+        "interface_name": "x",
+        "ipv4_address": "x",
+        "ipv6_address": "x",
+        "is_up": true
+      }
+    ],
+    "alarm_summary": {
+      "critical": 1,
+      "warning": 1,
+      "ok": 1,
+      "inactive": 1,
+      "acknowledged": 1
+    },
+    "tags": [
+      {
+        "uuid": "5f0c2e8a-1b0d-4c7e-9a52-0d3f6b8e4a11",
+        "name": "x",
+        "group": {
+          "uuid": "5f0c2e8a-1b0d-4c7e-9a52-0d3f6b8e4a11",
+          "name": "x"
+        }
+      }
+    ],
+    "console_url": "x"
+  }
+}

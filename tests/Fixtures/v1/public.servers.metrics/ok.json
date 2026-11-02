@@ -1,0 +1,38 @@
+{
+  "data": {
+    "server": {
+      "uuid": "5f0c2e8a-1b0d-4c7e-9a52-0d3f6b8e4a11",
+      "name": "x"
+    },
+    "family": "x",
+    "window": {
+      "from": 1798761600000,
+      "to": 1798761600000
+    },
+    "source": "x",
+    "step_seconds": 1,
+    "series": [
+      {
+        "name": "x",
+        "unit": "x",
+        "labels": {
+          "mount": "x",
+          "device": "x",
+          "interface": "x",
+          "state": "x",
+          "cpu": "x"
+        },
+        "point_meaning": "x",
+        "points": [
+          [
+            1798761600000,
+            1.5
+          ]
+        ]
+      }
+    ],
+    "oom_kills_in_window": 1,
+    "conntrack_loaded": true,
+    "files_host_limited": true
+  }
+}

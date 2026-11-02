@@ -1,0 +1,22 @@
+{
+  "data": [
+    {
+      "logged_at": 1798761600000,
+      "level": "x",
+      "stream": "x",
+      "message": "x",
+      "source": {
+        "type": "x",
+        "uuid": "5f0c2e8a-1b0d-4c7e-9a52-0d3f6b8e4a11",
+        "name": "x"
+      }
+    }
+  ],
+  "next_cursor": null,
+  "meta": {
+    "window": {
+      "from": 1798761600000,
+      "to": 1798761600000
+    }
+  }
+}

@@ -7,7 +7,9 @@ namespace WatchTower15;
 use Psr\Http\Client\ClientInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use WatchTower15\Api\Generated\ServiceProperties;
 use WatchTower15\Api\Me;
+use WatchTower15\Api\Operations;
 use WatchTower15\Credentials\CredentialFormat;
 use WatchTower15\Http\CurlTransport;
 use WatchTower15\Http\Psr18Transport;
@@ -34,6 +36,8 @@ use WatchTower15\Internal\SystemSleeper;
  */
 class Client
 {
+    use ServiceProperties;
+
     public const DEFAULT_API_URL = 'https://rest.watchtower15.com/v1';
 
     public const DEFAULT_INGEST_URL = 'https://api.watchtower15.com';
@@ -47,6 +51,8 @@ class Client
     private readonly SecretsHandle $secrets;
 
     private readonly Sender $sender;
+
+    private readonly Operations $operations;
 
     private readonly string $apiUrl;
 
@@ -117,6 +123,8 @@ class Client
             $appInfo,
         );
         $this->ingest = new IngestServices($this->sender, $this->secrets, $this->ingestUrl);
+        $this->operations = new Operations($this->sender, $this->secrets, $this->apiUrl);
+        $this->initialiseServices($this->operations);
     }
 
     /**
@@ -176,10 +184,26 @@ class Client
             RetryPolicy::Read,
             null,
             [],
-            RequestOptions::from($options),
+            self::refusingKey(RequestOptions::from($options)),
         );
 
         return Me::fromData($answer->data());
+    }
+
+    /**
+     * Calls an operation newer than the installed SDK, with the same auth, retries, errors and `lastResponse()`. `$method` is
+     * GET, POST, PUT, PATCH or DELETE; `$path` is relative to `/v1` (`/servers/{server_uuid}/ports`), its `{name}`
+     * placeholders filled from `$params`; the rest of `$params` goes to the query (GET, DELETE) or a JSON body. A POST carries
+     * an `Idempotency-Key`. Returns the decoded envelope (`data`, and on a list `next_cursor`, `total`, `meta`).
+     *
+     * @param array<string, mixed> $params
+     * @param RequestOptions|array<string, mixed>|null $options
+     * @return array<string, mixed>
+     * @throws ConfigurationException before anything is sent, for a method, path or placeholder it will not use
+     */
+    public function request(string $method, string $path, array $params = [], RequestOptions|array|null $options = null): array
+    {
+        return $this->operations->request($method, $path, $params, $options);
     }
 
     /** What the last HTTP exchange answered, or null before the first. */
@@ -260,6 +284,13 @@ class Client
     public function __unserialize(array $data): void
     {
         throw new \LogicException('a Client holds credentials and is not serialisable');
+    }
+
+    private static function refusingKey(RequestOptions $options): RequestOptions
+    {
+        $options->refuseIdempotencyKey();
+
+        return $options;
     }
 
     private static function credential(#[\SensitiveParameter] ?string $value, string $parameter, string $kind): ?string

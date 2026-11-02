@@ -48,6 +48,7 @@ final class LogsPublisher
         }
         Requirement::credential($this->secrets, Secrets::LOGS);
         $options = RequestOptions::from($options);
+        $options->refuseIdempotencyKey('idempotencyKey');
 
         $encoded = [];
         $index = 0;

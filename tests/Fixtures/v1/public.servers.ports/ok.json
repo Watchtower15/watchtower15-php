@@ -1,0 +1,30 @@
+{
+  "data": [
+    {
+      "uuid": "5f0c2e8a-1b0d-4c7e-9a52-0d3f6b8e4a11",
+      "port": 1,
+      "protocol": "x",
+      "bind_scope": "x",
+      "addresses": [
+        "x"
+      ],
+      "process_name": "x",
+      "is_open": true,
+      "state": "x",
+      "opened_at": 1798761600000,
+      "closed_at": 1798761600000,
+      "first_seen_at": 1798761600000,
+      "tracked": true,
+      "expected": true,
+      "charted": true,
+      "health_status": "x",
+      "retired_at": 1798761600000
+    }
+  ],
+  "next_cursor": null,
+  "total": 1,
+  "meta": {
+    "reported_at": 1798761600000,
+    "capped": true
+  }
+}
