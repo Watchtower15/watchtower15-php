@@ -14,6 +14,7 @@ use WatchTower15\Ingest\InvalidPayloadException;
 use WatchTower15\Internal\ChunkPusher;
 use WatchTower15\Testing\MockTransport;
 use WatchTower15\Testing\RecordedRequest;
+use WatchTower15\Tests\Support\FakeClock;
 use WatchTower15\Tests\Support\Harness;
 use WatchTower15\Tests\Support\Keys;
 
@@ -216,7 +217,9 @@ final class MetricsPublisherTest extends TestCase
 
     private function daysAgo(int $days): \DateTimeImmutable
     {
-        return (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))->modify("-$days days");
+        // Ages are taken from the harness clock, which the client reads, not from the real one: the clock is fixed, so the tests
+        // do not depend on the date they run on.
+        return (new FakeClock())->now()->modify("-$days days");
     }
 
     public function testI4PointsAreCheckedBeforeAnythingIsSent(): void
@@ -416,13 +419,14 @@ final class MetricsPublisherTest extends TestCase
     /** @return iterable<string, array{callable(): mixed, bool}> */
     public static function ages(): iterable
     {
-        $thirtyOne = time() - 31 * 86400;
+        $now = (new FakeClock())->now()->getTimestamp();   // the harness clock, not time(): the tests do not depend on today's date
+        $thirtyOne = $now - 31 * 86400;
         yield 'date object' => [static fn () => new \DateTimeImmutable('@' . $thirtyOne), true];
         yield 'epoch seconds' => [static fn () => $thirtyOne, true];
         yield 'epoch ms' => [static fn () => $thirtyOne * 1000, true];
         yield '10-digit string' => [static fn () => (string) $thirtyOne, true];
         yield 'rfc 3339 string' => [static fn () => gmdate('Y-m-d\TH:i:s\Z', $thirtyOne), true];
-        yield '29 days' => [static fn () => time() - 29 * 86400, false];
+        yield '29 days' => [static fn () => $now - 29 * 86400, false];
         yield 'unreadable' => [static fn () => 'not a time', false];
     }
 
