@@ -15,6 +15,28 @@ https://docs.watchtower15.com. Report a vulnerability to contact@watchtower15.co
 composer require watchtower15/sdk
 ```
 
+## Support policy
+
+- **PHP.** Every PHP minor from 8.3 is supported until its own security support ends (php.net's dates). Dropping one is a
+  minor release, announced in the release before it. A new PHP minor joins the tested matrix by its general availability
+  (PHP 8.6: 19 November 2026).
+- **Frameworks.** Laravel 12 and 13; Symfony 6.4, 7.4 and 8.x (8.x on PHP 8.4 and later); CakePHP 5.1 and later. A
+  framework version is dropped in the first minor release after its own security support ends.
+- **Versions.** [Semantic Versioning](https://semver.org), independent of the API's `v1`. A new API operation is a minor
+  release; raising the PHP floor is a minor release announced one release ahead; a change to the SDK's own signatures,
+  array shapes or property types is a major release. All four packages are released together, at one version.
+- **Tested.** Every release is tested on these corners:
+
+| Package | PHP 8.3 (lowest dependencies) | PHP 8.4 | PHP 8.5 |
+|---|---|---|---|
+| `watchtower15/sdk` | yes | not a separate corner | yes |
+| `watchtower15/laravel` | Laravel 12 | not a separate corner | Laravel 13 |
+| `watchtower15/symfony` | Symfony 6.4 and 7.4 | Symfony 8 | Symfony 8 |
+| `watchtower15/cakephp` | CakePHP 5.1 | not a separate corner | CakePHP 5.4 |
+
+- **Security fixes** ship in the newest minor release as a patch release at once (Composer blocks the install of a version
+  with a published advisory). Report a vulnerability to the address in `SECURITY.md`.
+
 ## The three credentials
 
 A WatchTower15 call uses one of three credentials, each created in the console and each good for one job:
