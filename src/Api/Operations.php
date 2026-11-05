@@ -56,14 +56,29 @@ final class Operations
      * @param array<string, string> $pathValues
      * @param array<string, mixed> $params
      * @param RequestOptions|array<array-key, mixed>|null $options
-     * @return object|array<string, mixed>
+     * @return object|array<string, mixed>|null null for an operation the spec declares 204 with no answer (a delete)
      */
-    public function call(string $operation, array $pathValues, array $params, RequestOptions|array|null $options): object|array
+    public function call(string $operation, array $pathValues, array $params, RequestOptions|array|null $options): object|array|null
     {
         $row = $this->row($operation);
         [$answer] = $this->run($operation, $row, $pathValues, $params, $options);
-        $data = $answer->data();
+
+        return $this->result($row, $answer);
+    }
+
+    /**
+     * What a single-object operation returns: nothing for one the spec declares 204 with no answer, the model for one with a model, the data otherwise.
+     *
+     * @param array{method: string, path: string, pathParams: list<string>, query: list<string>, body: list<string>|null, paged: bool, meta: class-string<Hydratable>|null, model: class-string<Hydratable>|null, status: int, idempotent: bool} $row
+     * @return object|array<string, mixed>|null
+     */
+    private function result(array $row, Answer $answer): object|array|null
+    {
         $model = $row['model'];
+        if ($row['status'] === 204 && $model === null) {
+            return null;
+        }
+        $data = $answer->data();
 
         return $model === null ? $data : $model::fromArray($data);
     }
@@ -145,15 +160,19 @@ final class Operations
         }
 
         $operation = 'request:' . $verb . ' ' . $path;
+        // A write is a POST, a PUT or a DELETE (Plan_API_06 D24 (1)): it carries one Idempotency-Key, the caller's or a UUIDv4, kept across its retries, and
+        // is retried as an idempotent write. The API refuses PATCH everywhere (D4), so a PATCH keeps today's behaviour: no key, a caller's key refused,
+        // never retried once it was sent, so a call the API can only refuse is never replayed as a write.
         $headers = [];
-        if ($verb === 'POST') {
+        $keyed = in_array($verb, ['POST', 'PUT', 'DELETE'], true);
+        if ($keyed) {
             $headers['Idempotency-Key'] = $resolved->idempotencyKey ?? self::uuid();
         } else {
             $resolved->refuseIdempotencyKey();
         }
-        $policy = match ($verb) {
-            'GET' => RetryPolicy::Read,
-            'POST' => RetryPolicy::IdempotentWrite,
+        $policy = match (true) {
+            $verb === 'GET' => RetryPolicy::Read,
+            $keyed => RetryPolicy::IdempotentWrite,
             default => RetryPolicy::ConnectOnly,
         };
         $url = $this->apiUrl . $filled;
@@ -166,7 +185,8 @@ final class Operations
             $headers['Content-Type'] = 'application/json';
         }
 
-        return $this->sender->execute(ErrorMapper::V1, Secrets::API, $operation, $verb, $url, $policy, $body, $headers, $resolved)->body;
+        // `request()` has no spec row, and the deletes of API 07 are first called through it: for it a 204 is a success for any method, answering `['data' => null]`.
+        return $this->sender->execute(ErrorMapper::V1, Secrets::API, $operation, $verb, $url, $policy, $body, $headers, $resolved, true)->body;
     }
 
     // ── internals ───────────────────────────────────────────────────────────────────────────────────────────────────
@@ -190,7 +210,8 @@ final class Operations
     {
         Requirement::credential($this->secrets, Secrets::API);
         $resolved = RequestOptions::from($options);
-        $write = $row['method'] === 'POST';
+        // Every generated operation that is not a read writes: a POST, a PUT or a DELETE (Plan_API_06 D24 (1)); the policy still keys on the row's `idempotent` flag.
+        $write = $row['method'] !== 'GET';
         if (! $write) {
             $resolved->refuseIdempotencyKey();
         }
@@ -232,7 +253,10 @@ final class Operations
             default => RetryPolicy::ConnectOnly,
         };
 
-        return [$this->sender->execute(ErrorMapper::V1, Secrets::API, $operation, $row['method'], $url, $policy, $body, $headers, $resolved), $resolved];
+        // A 204 is a success only for an operation the spec declares 204 with no 2xx schema (a null model): any other empty answer stays an error (D24 (2)).
+        $noContent = $row['status'] === 204 && $row['model'] === null;
+
+        return [$this->sender->execute(ErrorMapper::V1, Secrets::API, $operation, $row['method'], $url, $policy, $body, $headers, $resolved, $noContent), $resolved];
     }
 
     /**

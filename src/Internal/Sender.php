@@ -134,6 +134,9 @@ final class Sender
      * @param string               $api        `ErrorMapper::V1` or `ErrorMapper::INGEST`.
      * @param string               $credential `Secrets::API`, `METRICS` or `LOGS`.
      * @param array<string, string> $headers
+     * @param bool                 $noContentIsSuccess a `204 No Content` with an empty body is a success answering `data: null` (Plan_API_06 D24 (2)): the
+     *                                                 caller allows it for an operation the spec declares 204 with no 2xx schema, and `request()` always; every other
+     *                                                 empty answer stays the failure it is
      */
     public function execute(
         string $api,
@@ -145,6 +148,7 @@ final class Sender
         #[\SensitiveParameter] ?string $body = null,
         array $headers = [],
         ?RequestOptions $options = null,
+        bool $noContentIsSuccess = false,
     ): Answer {
         $options ??= new RequestOptions();
         $timeout = $options->timeout ?? $this->timeout;
@@ -186,6 +190,10 @@ final class Sender
             $info = ResponseInfo::fromResponse($response, $operation);
             $this->last = $info;
             DeprecationNotices::check($operation, $response, $this->logger);
+
+            if ($noContentIsSuccess && $response->getStatusCode() === 204 && (string) $response->getBody() === '') {
+                return new Answer($response, ['data' => null]);
+            }
 
             if (ErrorMapper::isSuccess($response, $api)) {
                 /** @var array<string, mixed> $decoded */

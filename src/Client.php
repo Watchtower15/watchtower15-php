@@ -197,8 +197,9 @@ class Client
     /**
      * Calls an operation newer than the installed SDK, with the same auth, retries, errors and `lastResponse()`. `$method` is
      * GET, POST, PUT, PATCH or DELETE; `$path` is relative to `/v1` (`/servers/{server_uuid}/ports`), its `{name}`
-     * placeholders filled from `$params`; the rest of `$params` goes to the query (GET, DELETE) or a JSON body. A POST carries
-     * an `Idempotency-Key`. Returns the decoded envelope (`data`, and on a list `next_cursor`, `total`, `meta`).
+     * placeholders filled from `$params`; the rest of `$params` goes to the query (GET, DELETE) or a JSON body. A POST, PUT or DELETE
+     * carries an `Idempotency-Key` (yours, or one made for the call and kept across its retries) and is retried as an idempotent write. Returns the
+     * decoded envelope (`data`, and on a list `next_cursor`, `total`, `meta`); a `204 No Content` answers `['data' => null]`.
      *
      * @param array<string, mixed> $params
      * @param RequestOptions|array<string, mixed>|null $options

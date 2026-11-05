@@ -6,6 +6,7 @@ namespace WatchTower15\Tests\Api;
 
 use PHPUnit\Framework\TestCase;
 use WatchTower15\Api\Generated\Models\DomainsRunScan;
+use WatchTower15\Api\Operations;
 use WatchTower15\Api\Generated\Models\IncidentsAcknowledge;
 use WatchTower15\Api\Generated\Models\ServersListItem;
 use WatchTower15\Api\Generated\Models\ServersMetrics;
@@ -19,6 +20,7 @@ use WatchTower15\Exception\NotFoundException;
 use WatchTower15\Exception\PermissionException;
 use WatchTower15\Exception\RateLimitException;
 use WatchTower15\Exception\ServiceUnavailableException;
+use WatchTower15\Exception\UnexpectedResponseException;
 use WatchTower15\Exception\WaiterTimeoutException;
 use WatchTower15\Http\RequestOptions;
 use WatchTower15\Testing\FakeTime;
@@ -269,18 +271,14 @@ final class OperationsTest extends TestCase
         self::assertSame($first->header('Idempotency-Key'), $second->header('Idempotency-Key'));
         self::assertSame(['note' => 'done'], $first->body, 'the rest of the params is the JSON body');
 
-        // A DELETE has no key, and its 503 is not retried.
+        // A DELETE is a write (Plan_API_06 D24 (1)): it carries a key too, the same on its retry after a 503.
         $h = new Harness();
-        $h->transport->append(MockTransport::problem(503, 'service_unavailable'));
-        try {
-            $h->client->request('delete', '/things/{thing_uuid}', ['thing_uuid' => self::U]);
-            self::fail('expected a ServiceUnavailableException');
-        } catch (ServiceUnavailableException) {
-            // expected
-        }
-        self::assertCount(1, $h->transport->requests());
-        self::assertSame('DELETE', $h->transport->requests()[0]->method);
-        self::assertNull($h->transport->requests()[0]->header('Idempotency-Key'));
+        $h->transport->append(MockTransport::problem(503, 'service_unavailable'), Fixture::response(['data' => []]));
+        $h->client->request('delete', '/things/{thing_uuid}', ['thing_uuid' => self::U]);
+        [$first, $second] = $h->transport->requests();
+        self::assertSame('DELETE', $first->method);
+        self::assertNotNull($first->header('Idempotency-Key'));
+        self::assertSame($first->header('Idempotency-Key'), $second->header('Idempotency-Key'));
 
         // Its connect failure before anything was sent is retried once.
         $h = new Harness();
@@ -377,6 +375,117 @@ final class OperationsTest extends TestCase
         self::assertNotSame([], $metrics->series);
         self::assertSame([[1798761600000, 1.5]], $metrics->series[0]->points);
         self::assertSame('2027-01-01T00:00:00+00:00', $metrics->window->from->format('c'));
+    }
+
+    // ── K1 (plan WT15-API-00006 §9.4): a write is any non-GET ───────────────────────────────────────────────────────────
+
+    /**
+     * A generated PUT and DELETE (a fixture table: the operation table holds none yet) send an Idempotency-Key, keep it across a retry after a 502
+     * that was sent, and retry under IdempotentWrite because their rows say `idempotent: true`; the same for `request('PUT')` and
+     * `request('DELETE')`; `request('PATCH')` sends no key and is not retried once sent.
+     */
+    public function testK1APutAndADeleteAreWritesLikeAPost(): void
+    {
+        foreach (['PUT', 'DELETE'] as $verb) {
+            $h = new Harness();
+            $row = ['method' => $verb, 'path' => '/things/{thing_uuid}', 'pathParams' => ['thing_uuid'], 'query' => [], 'body' => $verb === 'PUT' ? ['name'] : null, 'paged' => false, 'meta' => null, 'model' => null, 'status' => $verb === 'PUT' ? 200 : 204, 'idempotent' => true];
+            $h->transport->append(MockTransport::problem(502, 'bad_gateway'), Fixture::response(['data' => null]));
+
+            $run = new \ReflectionMethod(Operations::class, 'run');
+            $property = new \ReflectionProperty($h->client, 'operations');
+            $run->invoke($property->getValue($h->client), 'fixture.' . strtolower($verb), $row, ['thing_uuid' => self::U], $verb === 'PUT' ? ['name' => 'x'] : [], null);
+
+            $requests = $h->transport->requests();
+            self::assertCount(2, $requests, "$verb is retried after a 502 it was sent through");
+            self::assertSame($verb, $requests[0]->method);
+            self::assertNotNull($requests[0]->header('Idempotency-Key'), "$verb carries a key");
+            self::assertSame($requests[0]->header('Idempotency-Key'), $requests[1]->header('Idempotency-Key'), "$verb keeps its key across the retry");
+        }
+
+        foreach (['PUT', 'DELETE'] as $verb) {
+            $h = new Harness();
+            $h->transport->append(MockTransport::problem(502, 'bad_gateway'), Fixture::response(['data' => null]));
+            $h->client->request($verb, '/things/{thing_uuid}', ['thing_uuid' => self::U]);
+            $requests = $h->transport->requests();
+            self::assertCount(2, $requests, "request($verb) is retried as a write");
+            self::assertSame($requests[0]->header('Idempotency-Key'), $requests[1]->header('Idempotency-Key'));
+            self::assertNotNull($requests[0]->header('Idempotency-Key'));
+        }
+
+        // The caller's own key is taken by a PUT and a DELETE, and refused by a PATCH.
+        $h = new Harness();
+        $h->transport->append(Fixture::response(['data' => null]));
+        $h->client->request('DELETE', '/things/{thing_uuid}', ['thing_uuid' => self::U], ['idempotency_key' => 'mine-1']);
+        self::assertSame('mine-1', $h->transport->requests()[0]->header('Idempotency-Key'));
+
+        $h = new Harness();
+        $h->transport->append(new ApiConnectionException('slow', true, false, 'timeout'), Fixture::response(['data' => []]));
+        try {
+            $h->client->request('PATCH', '/things/{thing_uuid}', ['thing_uuid' => self::U]);
+            self::fail('expected an ApiConnectionException');
+        } catch (ApiConnectionException) {
+            // expected: sent, so not retried
+        }
+        self::assertCount(1, $h->transport->requests());
+        self::assertNull($h->transport->requests()[0]->header('Idempotency-Key'), 'a PATCH sends no key');
+    }
+
+    // ── K2: a 204 is a success only where the spec declares one ─────────────────────────────────────────────────────────
+
+    /** @return array{method: string, path: string, pathParams: list<string>, query: list<string>, body: list<string>|null, paged: bool, meta: null, model: class-string<\WatchTower15\Api\Hydratable>|null, status: int, idempotent: bool} */
+    private static function fixtureRow(string $method, int $status, ?string $model = null): array
+    {
+        return ['method' => $method, 'path' => '/things/{thing_uuid}', 'pathParams' => ['thing_uuid'], 'query' => [], 'body' => null, 'paged' => false, 'meta' => null, 'model' => $model, 'status' => $status, 'idempotent' => true];
+    }
+
+    public function testK2A204IsASuccessOnlyForAnOperationTheSpecDeclaresSo(): void
+    {
+        $operations = static fn (Harness $h): Operations => (new \ReflectionProperty($h->client, 'operations'))->getValue($h->client);
+        $run = new \ReflectionMethod(Operations::class, 'run');
+        $result = new \ReflectionMethod(Operations::class, 'result');
+        $empty = static fn (int $status): \GuzzleHttp\Psr7\Response => new \GuzzleHttp\Psr7\Response($status);
+
+        // An operation the spec declares 204 with no 2xx schema: its 204 answers null.
+        $h = new Harness();
+        $h->transport->append($empty(204));
+        $row = self::fixtureRow('DELETE', 204);
+        [$answer] = $run->invoke($operations($h), 'fixture.delete', $row, ['thing_uuid' => self::U], [], null);
+        self::assertNull($result->invoke($operations($h), $row, $answer));
+        self::assertSame(204, $h->client->lastResponse()?->statusCode);
+
+        // An operation with a 2xx schema: an empty 200 is still an unexpected answer, never a null.
+        $h = new Harness();
+        $h->transport->append($empty(200));
+        try {
+            $run->invoke($operations($h), 'fixture.put', self::fixtureRow('PUT', 200, ServersListItem::class), ['thing_uuid' => self::U], [], null);
+            self::fail('expected an UnexpectedResponseException');
+        } catch (UnexpectedResponseException) {
+            // expected
+        }
+
+        // And an operation that declares 204 does not take an empty 200 for its success.
+        $h = new Harness();
+        $h->transport->append($empty(200));
+        try {
+            $run->invoke($operations($h), 'fixture.delete', self::fixtureRow('DELETE', 204), ['thing_uuid' => self::U], [], null);
+            self::fail('expected an UnexpectedResponseException');
+        } catch (UnexpectedResponseException) {
+            // expected
+        }
+
+        // request(): a 204 answers ['data' => null] for any method; an empty 200 is still unexpected.
+        $h = new Harness();
+        $h->transport->append($empty(204));
+        self::assertSame(['data' => null], $h->client->request('DELETE', '/things/{thing_uuid}', ['thing_uuid' => self::U]));
+
+        $h = new Harness();
+        $h->transport->append($empty(204));
+        self::assertSame(['data' => null], $h->client->request('POST', '/things/{thing_uuid}/archive', ['thing_uuid' => self::U]));
+
+        $h = new Harness();
+        $h->transport->append($empty(200));
+        $this->expectException(UnexpectedResponseException::class);
+        $h->client->request('GET', '/things/{thing_uuid}', ['thing_uuid' => self::U]);
     }
 
     // ── R13: where the idempotency key is refused ───────────────────────────────────────────────────────────────────
