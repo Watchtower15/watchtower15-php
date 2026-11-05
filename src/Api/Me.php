@@ -26,6 +26,8 @@ final readonly class Me
         public string $organisationUuid,
         public string $organisationName,
         private array $raw = [],
+        /** `person`, or `service_account` for an account that owns keys for automation; null from a backend that does not say (Plan_API_06 D22). */
+        public ?string $accountType = null,
     ) {
     }
 
@@ -59,6 +61,7 @@ final readonly class Me
             self::string($organisation, 'uuid'),
             self::string($organisation, 'name'),
             $data,
+            is_string($user['account_type'] ?? null) ? $user['account_type'] : null,
         );
     }
 

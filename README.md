@@ -282,7 +282,8 @@ An `ApiException` gives `getStatusCode()`, `getErrorCode()`, `getDetail()`, `get
 
 | Operation | Retried | Never retried |
 |---|---|---|
-| `me()`, `metrics->list()` | no answer, 408, 429, 502, 503, 504 | 500 and every other 4xx |
+| `me()`, `metrics->list()`, every other read | no answer, 408, 429, 502, 503, 504 | 500 and every other 4xx |
+| every `/v1` write (POST, PUT, DELETE), `request()` for them | the same, and any 5xx, with the same `Idempotency-Key` | every other 4xx |
 | `metrics->push()`, `logs->push()` | the same, and any 5xx, with the same bytes and key | every other 4xx; the log volume stop; a daily limit |
 
 Up to `maxRetries` more attempts. A wait is the server's `Retry-After`; a throttled ingest push with none waits 60 s (the
@@ -353,9 +354,11 @@ When a response says the rate limit is spent, `autoPaging()` waits for its reset
 seconds away (60 unless you set it) and otherwise throws `RateLimitException` (`getRetryAfter()`), without sending a request
 that could only earn a 429.
 
-**Writes.** `acknowledge`, `resolve` and `runScan` send an `Idempotency-Key`, a random one unless you give your own
+**Writes.** A write is a POST, a PUT or a DELETE. Each sends an `Idempotency-Key`, a random one unless you give your own
 (`['idempotency_key' => 'ack-2026-11-01-42']`, 1 to 255 visible ASCII characters). A retry sends the same key, so a write
-retries like a read, and an answer replayed from the first try (`$wt15->lastResponse()->replayed`) is a success.
+retries like a read, and an answer replayed from the first try (`$wt15->lastResponse()->replayed`) is a success. A delete
+answers `204 No Content`: its method returns `null`, and `request()` answers `['data' => null]`. A PATCH is refused by the
+API, so `request('PATCH', …)` sends no key and is not retried once it was sent.
 
 **Waiting for a scan.** `runScan` answers at once with a scan that is `queued`:
 
@@ -367,7 +370,7 @@ echo $done->status;   // completed, failed or timeout; a status added later ends
 
 Past the timeout it throws `WaiterTimeoutException`, whose `scan()` is the last scan read.
 
-**An operation newer than this SDK.** `request()` calls it with the same key, retries, errors and `lastResponse()`:
+**An operation newer than this SDK.** `request()` calls it with the same key (a POST, PUT or DELETE), retries, errors and `lastResponse()`:
 
 ```php
 $envelope = $wt15->request('GET', '/servers/{server_uuid}/ports', ['server_uuid' => $serverUuid, 'limit' => 5]);
