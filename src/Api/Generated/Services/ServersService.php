@@ -6,6 +6,10 @@ declare(strict_types=1);
 
 namespace WatchTower15\Api\Generated\Services;
 
+use WatchTower15\Api\Generated\Models\ServersApprove;
+use WatchTower15\Api\Generated\Models\ServersArchive;
+use WatchTower15\Api\Generated\Models\ServersDismissSecurityFinding;
+use WatchTower15\Api\Generated\Models\ServersForgetPort;
 use WatchTower15\Api\Generated\Models\ServersIncidentsItem;
 use WatchTower15\Api\Generated\Models\ServersLatest;
 use WatchTower15\Api\Generated\Models\ServersListItem;
@@ -14,8 +18,18 @@ use WatchTower15\Api\Generated\Models\ServersPortsItem;
 use WatchTower15\Api\Generated\Models\ServersPortsMeta;
 use WatchTower15\Api\Generated\Models\ServersProcessesItem;
 use WatchTower15\Api\Generated\Models\ServersProcessesMeta;
+use WatchTower15\Api\Generated\Models\ServersProvision;
+use WatchTower15\Api\Generated\Models\ServersReactivate;
+use WatchTower15\Api\Generated\Models\ServersRecheckPosture;
+use WatchTower15\Api\Generated\Models\ServersRestoreSecurityFinding;
+use WatchTower15\Api\Generated\Models\ServersRevoke;
+use WatchTower15\Api\Generated\Models\ServersRotateToken;
+use WatchTower15\Api\Generated\Models\ServersSecurityFinding;
 use WatchTower15\Api\Generated\Models\ServersSystemServicesItem;
 use WatchTower15\Api\Generated\Models\ServersSystemServicesMeta;
+use WatchTower15\Api\Generated\Models\ServersUpdate;
+use WatchTower15\Api\Generated\Models\ServersUpdatePort;
+use WatchTower15\Api\Generated\Models\ServersUpdateVolume;
 use WatchTower15\Api\Generated\Models\ServersView;
 use WatchTower15\Api\Generated\Models\ServersVolumesItem;
 use WatchTower15\Api\Operations;
@@ -26,6 +40,80 @@ class ServersService
 {
     public function __construct(protected readonly Operations $operations)
     {
+    }
+
+    /**
+     * public.servers.approve — POST /servers/{server_uuid}/approve
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServersApprove
+     */
+    public function approve(string $serverUuid, array $params = [], RequestOptions|array|null $options = null): ServersApprove
+    {
+        $result = $this->operations->call('public.servers.approve', ['server_uuid' => $serverUuid], $params, $options);
+        assert($result instanceof ServersApprove);
+
+        return $result;
+    }
+
+    /**
+     * public.servers.archive — POST /servers/{server_uuid}/archive
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServersArchive
+     */
+    public function archive(string $serverUuid, array $params = [], RequestOptions|array|null $options = null): ServersArchive
+    {
+        $result = $this->operations->call('public.servers.archive', ['server_uuid' => $serverUuid], $params, $options);
+        assert($result instanceof ServersArchive);
+
+        return $result;
+    }
+
+    /**
+     * public.servers.delete — DELETE /servers/{server_uuid}
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return null
+     */
+    public function delete(string $serverUuid, array $params = [], RequestOptions|array|null $options = null): null
+    {
+        $this->operations->call('public.servers.delete', ['server_uuid' => $serverUuid], $params, $options);
+
+        return null;
+    }
+
+    /**
+     * public.servers.dismissSecurityFinding — POST /servers/{server_uuid}/security-findings/{finding_uuid}/dismiss
+     *
+     * @param array{reason: string, review_on?: string|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServersDismissSecurityFinding
+     */
+    public function dismissSecurityFinding(string $serverUuid, string $findingUuid, array $params, RequestOptions|array|null $options = null): ServersDismissSecurityFinding
+    {
+        $result = $this->operations->call('public.servers.dismissSecurityFinding', ['server_uuid' => $serverUuid, 'finding_uuid' => $findingUuid], $params, $options);
+        assert($result instanceof ServersDismissSecurityFinding);
+
+        return $result;
+    }
+
+    /**
+     * public.servers.forgetPort — POST /servers/{server_uuid}/ports/{port_uuid}/forget
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServersForgetPort
+     */
+    public function forgetPort(string $serverUuid, string $portUuid, array $params = [], RequestOptions|array|null $options = null): ServersForgetPort
+    {
+        $result = $this->operations->call('public.servers.forgetPort', ['server_uuid' => $serverUuid, 'port_uuid' => $portUuid], $params, $options);
+        assert($result instanceof ServersForgetPort);
+
+        return $result;
     }
 
     /**
@@ -119,6 +207,126 @@ class ServersService
     }
 
     /**
+     * public.servers.provision — POST /servers/{server_uuid}/provision
+     *
+     * @param array{channel?: 'beta'|'stable'|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServersProvision
+     */
+    public function provision(string $serverUuid, array $params = [], RequestOptions|array|null $options = null): ServersProvision
+    {
+        $result = $this->operations->call('public.servers.provision', ['server_uuid' => $serverUuid], $params, $options);
+        assert($result instanceof ServersProvision);
+
+        return $result;
+    }
+
+    /**
+     * public.servers.reactivate — POST /servers/{server_uuid}/reactivate
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServersReactivate
+     */
+    public function reactivate(string $serverUuid, array $params = [], RequestOptions|array|null $options = null): ServersReactivate
+    {
+        $result = $this->operations->call('public.servers.reactivate', ['server_uuid' => $serverUuid], $params, $options);
+        assert($result instanceof ServersReactivate);
+
+        return $result;
+    }
+
+    /**
+     * public.servers.recheckPosture — POST /servers/{server_uuid}/security-posture/recheck
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServersRecheckPosture
+     */
+    public function recheckPosture(string $serverUuid, array $params = [], RequestOptions|array|null $options = null): ServersRecheckPosture
+    {
+        $result = $this->operations->call('public.servers.recheckPosture', ['server_uuid' => $serverUuid], $params, $options);
+        assert($result instanceof ServersRecheckPosture);
+
+        return $result;
+    }
+
+    /**
+     * public.servers.restoreSecurityFinding — POST /servers/{server_uuid}/security-findings/{finding_uuid}/restore
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServersRestoreSecurityFinding
+     */
+    public function restoreSecurityFinding(string $serverUuid, string $findingUuid, array $params = [], RequestOptions|array|null $options = null): ServersRestoreSecurityFinding
+    {
+        $result = $this->operations->call('public.servers.restoreSecurityFinding', ['server_uuid' => $serverUuid, 'finding_uuid' => $findingUuid], $params, $options);
+        assert($result instanceof ServersRestoreSecurityFinding);
+
+        return $result;
+    }
+
+    /**
+     * public.servers.revoke — POST /servers/{server_uuid}/revoke
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServersRevoke
+     */
+    public function revoke(string $serverUuid, array $params = [], RequestOptions|array|null $options = null): ServersRevoke
+    {
+        $result = $this->operations->call('public.servers.revoke', ['server_uuid' => $serverUuid], $params, $options);
+        assert($result instanceof ServersRevoke);
+
+        return $result;
+    }
+
+    /**
+     * public.servers.rotateToken — POST /servers/{server_uuid}/rotate-token
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServersRotateToken
+     */
+    public function rotateToken(string $serverUuid, array $params = [], RequestOptions|array|null $options = null): ServersRotateToken
+    {
+        $result = $this->operations->call('public.servers.rotateToken', ['server_uuid' => $serverUuid], $params, $options);
+        assert($result instanceof ServersRotateToken);
+
+        return $result;
+    }
+
+    /**
+     * public.servers.securityFinding — GET /servers/{server_uuid}/security-findings/{finding_uuid}
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return ServersSecurityFinding
+     */
+    public function securityFinding(string $serverUuid, string $findingUuid, array $params = [], RequestOptions|array|null $options = null): ServersSecurityFinding
+    {
+        $result = $this->operations->call('public.servers.securityFinding', ['server_uuid' => $serverUuid, 'finding_uuid' => $findingUuid], $params, $options);
+        assert($result instanceof ServersSecurityFinding);
+
+        return $result;
+    }
+
+    /**
+     * public.servers.securityFindings — GET /servers/{server_uuid}/security-findings
+     *
+     * @param array{cursor?: string, include_total?: bool, kind?: 'posture'|'vulnerability', limit?: int<1, 100>} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return Page<array<string, mixed>>
+     */
+    public function securityFindings(string $serverUuid, array $params = [], RequestOptions|array|null $options = null): Page
+    {
+        /** @var Page<array<string, mixed>> $page */
+        $page = $this->operations->page('public.servers.securityFindings', ['server_uuid' => $serverUuid], $params, $options);
+
+        return $page;
+    }
+
+    /**
      * public.servers.systemServices — GET /servers/{server_uuid}/system-services
      *
      * @param array{cursor?: string, include_total?: bool, limit?: int<1, 100>} $params
@@ -131,6 +339,51 @@ class ServersService
         $page = $this->operations->page('public.servers.systemServices', ['server_uuid' => $serverUuid], $params, $options);
 
         return $page;
+    }
+
+    /**
+     * public.servers.update — PUT /servers/{server_uuid}
+     *
+     * @param array{active?: bool|null, display_name?: string|null, notes?: string|null, os_type?: string|null, server_profile_uuid?: non-empty-string|null, tag_uuids?: list<non-empty-string|null>|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServersUpdate
+     */
+    public function update(string $serverUuid, array $params = [], RequestOptions|array|null $options = null): ServersUpdate
+    {
+        $result = $this->operations->call('public.servers.update', ['server_uuid' => $serverUuid], $params, $options);
+        assert($result instanceof ServersUpdate);
+
+        return $result;
+    }
+
+    /**
+     * public.servers.updatePort — PUT /servers/{server_uuid}/ports/{port_uuid}
+     *
+     * @param array{expected?: bool|null, tracked?: bool|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServersUpdatePort
+     */
+    public function updatePort(string $serverUuid, string $portUuid, array $params = [], RequestOptions|array|null $options = null): ServersUpdatePort
+    {
+        $result = $this->operations->call('public.servers.updatePort', ['server_uuid' => $serverUuid, 'port_uuid' => $portUuid], $params, $options);
+        assert($result instanceof ServersUpdatePort);
+
+        return $result;
+    }
+
+    /**
+     * public.servers.updateVolume — PUT /servers/{server_uuid}/volumes/{volume_uuid}
+     *
+     * @param array{monitored?: bool|null, reset_override?: bool|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServersUpdateVolume
+     */
+    public function updateVolume(string $serverUuid, string $volumeUuid, array $params = [], RequestOptions|array|null $options = null): ServersUpdateVolume
+    {
+        $result = $this->operations->call('public.servers.updateVolume', ['server_uuid' => $serverUuid, 'volume_uuid' => $volumeUuid], $params, $options);
+        assert($result instanceof ServersUpdateVolume);
+
+        return $result;
     }
 
     /**

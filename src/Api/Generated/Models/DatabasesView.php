@@ -13,10 +13,14 @@ final readonly class DatabasesView implements Hydratable
 {
     /**
      * @param array<string, bool>|null $layersAvailable
+     * @param list<string> $reportedKeyFingerprints
      * @param list<DatabasesViewTagsItem> $tags
      * @param array<string, mixed> $raw The answer as the server sent it, unknown fields included.
      */
     public function __construct(
+        public ?string $authMethod,
+        public ?string $caSource,
+        public ?string $connectionType,
         public string $consoleUrl,
         public ?string $description,
         public ?string $engine,
@@ -30,6 +34,8 @@ final readonly class DatabasesView implements Hydratable
         public string $privacyMode,
         public ?string $provider,
         public ?string $providerEdition,
+        public ?string $referenceKeyFingerprint,
+        public array $reportedKeyFingerprints,
         public DatabasesViewSchema $schema,
         public string $status,
         public DatabasesViewStorage $storage,
@@ -46,6 +52,9 @@ final readonly class DatabasesView implements Hydratable
     public static function fromArray(array $data): static
     {
         return new static(
+            authMethod: isset($data['auth_method']) ? Hydrate::string($data['auth_method']) : null,
+            caSource: isset($data['ca_source']) ? Hydrate::string($data['ca_source']) : null,
+            connectionType: isset($data['connection_type']) ? Hydrate::string($data['connection_type']) : null,
             consoleUrl: Hydrate::string($data['console_url'] ?? null),
             description: isset($data['description']) ? Hydrate::string($data['description']) : null,
             engine: isset($data['engine']) ? Hydrate::string($data['engine']) : null,
@@ -59,6 +68,8 @@ final readonly class DatabasesView implements Hydratable
             privacyMode: Hydrate::string($data['privacy_mode'] ?? null),
             provider: isset($data['provider']) ? Hydrate::string($data['provider']) : null,
             providerEdition: isset($data['provider_edition']) ? Hydrate::string($data['provider_edition']) : null,
+            referenceKeyFingerprint: isset($data['reference_key_fingerprint']) ? Hydrate::string($data['reference_key_fingerprint']) : null,
+            reportedKeyFingerprints: Hydrate::list($data['reported_key_fingerprints'] ?? null, Hydrate::string(...)),
             schema: DatabasesViewSchema::fromArray(Hydrate::array($data['schema'] ?? null)),
             status: Hydrate::string($data['status'] ?? null),
             storage: DatabasesViewStorage::fromArray(Hydrate::array($data['storage'] ?? null)),

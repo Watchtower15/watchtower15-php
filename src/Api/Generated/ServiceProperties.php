@@ -12,9 +12,13 @@ use WatchTower15\Api\Generated\Services\DatabasesService;
 use WatchTower15\Api\Generated\Services\DomainsService;
 use WatchTower15\Api\Generated\Services\HealthService;
 use WatchTower15\Api\Generated\Services\IncidentsService;
+use WatchTower15\Api\Generated\Services\LogSourcesService;
 use WatchTower15\Api\Generated\Services\LogsService;
+use WatchTower15\Api\Generated\Services\MetricSourcesService;
+use WatchTower15\Api\Generated\Services\ServerProfilesService;
 use WatchTower15\Api\Generated\Services\ServersService;
 use WatchTower15\Api\Generated\Services\ServicesService;
+use WatchTower15\Api\Generated\Services\TagGroupsService;
 use WatchTower15\Api\Generated\Services\TagsService;
 use WatchTower15\Api\Operations;
 use WatchTower15\Api\Services\ScansService;
@@ -28,10 +32,14 @@ trait ServiceProperties
     public readonly DomainsService $domains;
     public readonly HealthService $health;
     public readonly IncidentsService $incidents;
+    public readonly LogSourcesService $logSources;
     public readonly LogsService $logs;
+    public readonly MetricSourcesService $metricSources;
     public readonly ScansService $scans;
+    public readonly ServerProfilesService $serverProfiles;
     public readonly ServersService $servers;
     public readonly ServicesService $services;
+    public readonly TagGroupsService $tagGroups;
     public readonly TagsService $tags;
 
     private function initialiseServices(Operations $operations): void
@@ -42,10 +50,14 @@ trait ServiceProperties
         $this->domains = new DomainsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->health = new HealthService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->incidents = new IncidentsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
+        $this->logSources = new LogSourcesService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->logs = new LogsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
+        $this->metricSources = new MetricSourcesService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->scans = new ScansService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
+        $this->serverProfiles = new ServerProfilesService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->servers = new ServersService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->services = new ServicesService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
+        $this->tagGroups = new TagGroupsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->tags = new TagsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
     }
 }

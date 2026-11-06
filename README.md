@@ -316,8 +316,8 @@ command reads only the process environment, never a framework's `.env` file: exp
 Every `/v1` operation is a method on a service named after its area: `$wt15->servers->list()`,
 `$wt15->domains->runScan($domainUuid, 'ssl')`, `$wt15->incidents->acknowledge($incidentUuid)`. The method is the action of
 the operation's id (`public.servers.systemServices` is `$wt15->servers->systemServices($serverUuid)`), the services are
-`alarms`, `customMetrics`, `databases`, `domains`, `health`, `incidents`, `logs`, `scans`, `servers`, `services` and
-`tags`, and `me()` stays on the client.
+`alarms`, `customMetrics`, `databases`, `domains`, `health`, `incidents`, `logSources`, `logs`, `metricSources`, `scans`,
+`serverProfiles`, `servers`, `services`, `tagGroups` and `tags`, and `me()` stays on the client.
 
 ```php
 $wt15 = WatchTower15\Client::fromEnvironment();
@@ -359,6 +359,30 @@ that could only earn a 429.
 retries like a read, and an answer replayed from the first try (`$wt15->lastResponse()->replayed`) is a success. A delete
 answers `204 No Content`: its method returns `null`, and `request()` answers `['data' => null]`. A PATCH is refused by the
 API, so `request('PATCH', …)` sends no key and is not retried once it was sent.
+
+**A write on a monitored resource.** The same rules cover the writes on servers, domains, services, databases, custom metrics,
+metric and log sources, server profiles and tags: the ids first, the body as the `$params` array, the object it changed as the
+answer.
+
+```php
+$group = $wt15->tagGroups->create(['name' => 'environment']);
+$tag = $wt15->tags->create(['tag_group_uuid' => $group->uuid, 'name' => 'production']);
+$wt15->tags->update($tag->uuid, ['name' => 'prod']);
+$wt15->tags->delete($tag->uuid);
+```
+
+A secret is shown once, in the answer of the call that made it: the enrollment token of `servers->provision()` and
+`servers->rotateToken()`, and the token of `metricSources->rotateToken()` and `logSources->rotateToken()`. A call that is
+replayed from its first try (your own repeat with the same key, or the SDK's own retry after a lost answer) answers the same
+object with that token `null`, because the API keeps no secret. A null token on a rotation or a provision therefore means
+"rotate again": check it and call the method again, with a new key, to get a token you can use.
+
+```php
+$server = $wt15->servers->rotateToken($serverUuid);
+if ($server->enrollmentToken === null) {
+    $server = $wt15->servers->rotateToken($serverUuid, [], ['idempotency_key' => bin2hex(random_bytes(16))]);
+}
+```
 
 **Waiting for a scan.** `runScan` answers at once with a scan that is `queued`:
 

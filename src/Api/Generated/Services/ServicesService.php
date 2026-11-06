@@ -6,8 +6,16 @@ declare(strict_types=1);
 
 namespace WatchTower15\Api\Generated\Services;
 
+use WatchTower15\Api\Generated\Models\ServicesCollectorPreview;
+use WatchTower15\Api\Generated\Models\ServicesCreate;
 use WatchTower15\Api\Generated\Models\ServicesListItem;
+use WatchTower15\Api\Generated\Models\ServicesPause;
+use WatchTower15\Api\Generated\Models\ServicesReassign;
+use WatchTower15\Api\Generated\Models\ServicesResume;
+use WatchTower15\Api\Generated\Models\ServicesRunNow;
 use WatchTower15\Api\Generated\Models\ServicesScansItem;
+use WatchTower15\Api\Generated\Models\ServicesUpdate;
+use WatchTower15\Api\Generated\Models\ServicesVerify;
 use WatchTower15\Api\Generated\Models\ServicesView;
 use WatchTower15\Api\Operations;
 use WatchTower15\Api\Page;
@@ -17,6 +25,50 @@ class ServicesService
 {
     public function __construct(protected readonly Operations $operations)
     {
+    }
+
+    /**
+     * public.services.collectorPreview — POST /services/collector-preview
+     *
+     * @param array{all?: list<non-empty-string>|null, any?: list<non-empty-string>|null, selection: 'servers'|'tags', servers?: list<non-empty-string>|null, with_parameters?: bool|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServicesCollectorPreview
+     */
+    public function collectorPreview(array $params, RequestOptions|array|null $options = null): ServicesCollectorPreview
+    {
+        $result = $this->operations->call('public.services.collectorPreview', [], $params, $options);
+        assert($result instanceof ServicesCollectorPreview);
+
+        return $result;
+    }
+
+    /**
+     * public.services.create — POST /services
+     *
+     * @param array{active?: bool|null, check_interval_seconds?: int<60, 86400>|null, collectors: array{all?: list<non-empty-string>|null, any?: list<non-empty-string>|null, selection?: 'servers'|'tags', servers?: list<non-empty-string>|null}, expected_http_statuses?: list<int<100, 599>>|null, expected_response_contains?: string|null, follow_redirects?: bool|null, host: string, member_limit?: int<1, 200>|null, name: string, notes?: string|null, parameters?: list<string>|null, path?: string|null, pool_mode?: 'active_standby'|'all_members'|null, port: int<1, 65535>, protocol: 'http'|'https'|'tcp'|'udp', quorum_n?: int<1, 200>|null, request_auth?: array{password?: string|null, token?: string|null, type?: 'basic'|'bearer'|'none', username?: string|null}|null, request_body?: string|null, request_headers?: list<string>|null, request_method?: 'DELETE'|'GET'|'HEAD'|'PATCH'|'POST'|'PUT'|null, response_empty?: bool|null, response_monitor_enabled?: bool|null, response_type?: 'json'|'xml'|null, tag_uuids?: list<non-empty-string|null>|null, timeout_seconds?: int<5, 120>|null, tls_verify?: bool|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServicesCreate
+     */
+    public function create(array $params, RequestOptions|array|null $options = null): ServicesCreate
+    {
+        $result = $this->operations->call('public.services.create', [], $params, $options);
+        assert($result instanceof ServicesCreate);
+
+        return $result;
+    }
+
+    /**
+     * public.services.delete — DELETE /services/{service_uuid}
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return null
+     */
+    public function delete(string $serviceUuid, array $params = [], RequestOptions|array|null $options = null): null
+    {
+        $this->operations->call('public.services.delete', ['service_uuid' => $serviceUuid], $params, $options);
+
+        return null;
     }
 
     /**
@@ -35,6 +87,82 @@ class ServicesService
     }
 
     /**
+     * public.services.parameterTestResult — GET /services/{service_uuid}/parameters/test
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return array<string, mixed>
+     */
+    public function parameterTestResult(string $serviceUuid, array $params = [], RequestOptions|array|null $options = null): array
+    {
+        $result = $this->operations->call('public.services.parameterTestResult', ['service_uuid' => $serviceUuid], $params, $options);
+        assert(is_array($result));
+
+        /** @var array<string, mixed> $result */
+        return $result;
+    }
+
+    /**
+     * public.services.pause — POST /services/{service_uuid}/pause
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServicesPause
+     */
+    public function pause(string $serviceUuid, array $params = [], RequestOptions|array|null $options = null): ServicesPause
+    {
+        $result = $this->operations->call('public.services.pause', ['service_uuid' => $serviceUuid], $params, $options);
+        assert($result instanceof ServicesPause);
+
+        return $result;
+    }
+
+    /**
+     * public.services.reassign — POST /services/{service_uuid}/reassign
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServicesReassign
+     */
+    public function reassign(string $serviceUuid, array $params = [], RequestOptions|array|null $options = null): ServicesReassign
+    {
+        $result = $this->operations->call('public.services.reassign', ['service_uuid' => $serviceUuid], $params, $options);
+        assert($result instanceof ServicesReassign);
+
+        return $result;
+    }
+
+    /**
+     * public.services.resume — POST /services/{service_uuid}/resume
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServicesResume
+     */
+    public function resume(string $serviceUuid, array $params = [], RequestOptions|array|null $options = null): ServicesResume
+    {
+        $result = $this->operations->call('public.services.resume', ['service_uuid' => $serviceUuid], $params, $options);
+        assert($result instanceof ServicesResume);
+
+        return $result;
+    }
+
+    /**
+     * public.services.runNow — POST /services/{service_uuid}/run-now
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServicesRunNow
+     */
+    public function runNow(string $serviceUuid, array $params = [], RequestOptions|array|null $options = null): ServicesRunNow
+    {
+        $result = $this->operations->call('public.services.runNow', ['service_uuid' => $serviceUuid], $params, $options);
+        assert($result instanceof ServicesRunNow);
+
+        return $result;
+    }
+
+    /**
      * public.services.scans — GET /services/{service_uuid}/scans
      *
      * @param array{cursor?: string, include_total?: bool, limit?: int<1, 100>, type: 'reachability'|'response'} $params
@@ -47,6 +175,52 @@ class ServicesService
         $page = $this->operations->page('public.services.scans', ['service_uuid' => $serviceUuid], $params, $options);
 
         return $page;
+    }
+
+    /**
+     * public.services.testParameters — POST /services/{service_uuid}/parameters/test
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return array<string, mixed>
+     */
+    public function testParameters(string $serviceUuid, array $params = [], RequestOptions|array|null $options = null): array
+    {
+        $result = $this->operations->call('public.services.testParameters', ['service_uuid' => $serviceUuid], $params, $options);
+        assert(is_array($result));
+
+        /** @var array<string, mixed> $result */
+        return $result;
+    }
+
+    /**
+     * public.services.update — PUT /services/{service_uuid}
+     *
+     * @param array{active: bool, check_interval_seconds?: int<60, 86400>|null, collectors?: array{all?: list<non-empty-string>|null, any?: list<non-empty-string>|null, selection?: 'servers'|'tags', servers?: list<non-empty-string>|null}|null, expected_http_statuses?: list<int<100, 599>>|null, expected_response_contains?: string|null, follow_redirects?: bool|null, host: string, member_limit?: int<1, 200>|null, name: string, notes?: string|null, parameters?: list<string>|null, path?: string|null, pool_mode?: 'active_standby'|'all_members'|null, port: int<1, 65535>, protocol?: 'http'|'https'|'tcp'|'udp'|null, quorum_n?: int<1, 200>|null, request_auth?: array{password?: string|null, token?: string|null, type?: 'basic'|'bearer'|'none', username?: string|null}|null, request_body?: string|null, request_headers?: list<string>|null, request_method?: 'DELETE'|'GET'|'HEAD'|'PATCH'|'POST'|'PUT'|null, response_empty?: bool|null, response_monitor_enabled?: bool|null, response_type?: 'json'|'xml'|null, tag_uuids?: list<non-empty-string|null>|null, timeout_seconds?: int<5, 120>|null, tls_verify?: bool|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServicesUpdate
+     */
+    public function update(string $serviceUuid, array $params, RequestOptions|array|null $options = null): ServicesUpdate
+    {
+        $result = $this->operations->call('public.services.update', ['service_uuid' => $serviceUuid], $params, $options);
+        assert($result instanceof ServicesUpdate);
+
+        return $result;
+    }
+
+    /**
+     * public.services.verify — POST /services/{service_uuid}/verify
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServicesVerify
+     */
+    public function verify(string $serviceUuid, array $params = [], RequestOptions|array|null $options = null): ServicesVerify
+    {
+        $result = $this->operations->call('public.services.verify', ['service_uuid' => $serviceUuid], $params, $options);
+        assert($result instanceof ServicesVerify);
+
+        return $result;
     }
 
     /**

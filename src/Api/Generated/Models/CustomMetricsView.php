@@ -12,6 +12,9 @@ use WatchTower15\Internal\Hydrate;
 final readonly class CustomMetricsView implements Hydratable
 {
     /**
+     * @param list<CustomMetricsViewLinkedServerAllTagsItem> $linkedServerAllTags
+     * @param list<CustomMetricsViewLinkedServerAnyTagsItem> $linkedServerAnyTags
+     * @param list<CustomMetricsViewLinkedServersItem>|null $linkedServers
      * @param list<string> $supportedAggregations
      * @param list<CustomMetricsViewTagsItem> $tags
      * @param array<string, mixed> $raw The answer as the server sent it, unknown fields included.
@@ -27,6 +30,10 @@ final readonly class CustomMetricsView implements Hydratable
         public ?string $description,
         public string $healthStatus,
         public ?\DateTimeImmutable $lastReceivedAt,
+        public array $linkedServerAllTags,
+        public array $linkedServerAnyTags,
+        public ?array $linkedServers,
+        public int $linkedServersCount,
         public int $maxBackfillPointsPerDay,
         public int $maxPointsPerDay,
         public string $metricKey,
@@ -58,6 +65,10 @@ final readonly class CustomMetricsView implements Hydratable
             description: isset($data['description']) ? Hydrate::string($data['description']) : null,
             healthStatus: Hydrate::string($data['health_status'] ?? null),
             lastReceivedAt: isset($data['last_received_at']) ? Hydrate::instant($data['last_received_at']) : null,
+            linkedServerAllTags: Hydrate::list($data['linked_server_all_tags'] ?? null, static fn (mixed $row): CustomMetricsViewLinkedServerAllTagsItem => CustomMetricsViewLinkedServerAllTagsItem::fromArray(Hydrate::array($row))),
+            linkedServerAnyTags: Hydrate::list($data['linked_server_any_tags'] ?? null, static fn (mixed $row): CustomMetricsViewLinkedServerAnyTagsItem => CustomMetricsViewLinkedServerAnyTagsItem::fromArray(Hydrate::array($row))),
+            linkedServers: isset($data['linked_servers']) ? Hydrate::list($data['linked_servers'], static fn (mixed $row): CustomMetricsViewLinkedServersItem => CustomMetricsViewLinkedServersItem::fromArray(Hydrate::array($row))) : null,
+            linkedServersCount: Hydrate::int($data['linked_servers_count'] ?? null),
             maxBackfillPointsPerDay: Hydrate::int($data['max_backfill_points_per_day'] ?? null),
             maxPointsPerDay: Hydrate::int($data['max_points_per_day'] ?? null),
             metricKey: Hydrate::string($data['metric_key'] ?? null),

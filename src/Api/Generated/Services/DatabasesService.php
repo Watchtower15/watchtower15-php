@@ -6,11 +6,23 @@ declare(strict_types=1);
 
 namespace WatchTower15\Api\Generated\Services;
 
+use WatchTower15\Api\Generated\Models\DatabasesAcceptKey;
+use WatchTower15\Api\Generated\Models\DatabasesCollectorPreview;
+use WatchTower15\Api\Generated\Models\DatabasesCreate;
+use WatchTower15\Api\Generated\Models\DatabasesDismissFinding;
 use WatchTower15\Api\Generated\Models\DatabasesFindingsItem;
 use WatchTower15\Api\Generated\Models\DatabasesListItem;
+use WatchTower15\Api\Generated\Models\DatabasesPause;
 use WatchTower15\Api\Generated\Models\DatabasesQueries;
+use WatchTower15\Api\Generated\Models\DatabasesReassign;
+use WatchTower15\Api\Generated\Models\DatabasesRefreshSchema;
+use WatchTower15\Api\Generated\Models\DatabasesRestoreFinding;
+use WatchTower15\Api\Generated\Models\DatabasesResume;
+use WatchTower15\Api\Generated\Models\DatabasesRunAdvisor;
 use WatchTower15\Api\Generated\Models\DatabasesSchemaChangesItem;
 use WatchTower15\Api\Generated\Models\DatabasesStorage;
+use WatchTower15\Api\Generated\Models\DatabasesUpdate;
+use WatchTower15\Api\Generated\Models\DatabasesVerify;
 use WatchTower15\Api\Generated\Models\DatabasesView;
 use WatchTower15\Api\Operations;
 use WatchTower15\Api\Page;
@@ -20,6 +32,80 @@ class DatabasesService
 {
     public function __construct(protected readonly Operations $operations)
     {
+    }
+
+    /**
+     * public.databases.acceptKey — POST /databases/{database_uuid}/accept-key
+     *
+     * @param array{fingerprint: string} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return DatabasesAcceptKey
+     */
+    public function acceptKey(string $databaseUuid, array $params, RequestOptions|array|null $options = null): DatabasesAcceptKey
+    {
+        $result = $this->operations->call('public.databases.acceptKey', ['database_uuid' => $databaseUuid], $params, $options);
+        assert($result instanceof DatabasesAcceptKey);
+
+        return $result;
+    }
+
+    /**
+     * public.databases.collectorPreview — POST /databases/collector-preview
+     *
+     * @param array{all?: list<non-empty-string>|null, any?: list<non-empty-string>|null, selection: 'servers'|'tags', servers?: list<non-empty-string>|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return DatabasesCollectorPreview
+     */
+    public function collectorPreview(array $params, RequestOptions|array|null $options = null): DatabasesCollectorPreview
+    {
+        $result = $this->operations->call('public.databases.collectorPreview', [], $params, $options);
+        assert($result instanceof DatabasesCollectorPreview);
+
+        return $result;
+    }
+
+    /**
+     * public.databases.create — POST /databases
+     *
+     * @param array{description?: string|null, name: string, provider: string} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return DatabasesCreate
+     */
+    public function create(array $params, RequestOptions|array|null $options = null): DatabasesCreate
+    {
+        $result = $this->operations->call('public.databases.create', [], $params, $options);
+        assert($result instanceof DatabasesCreate);
+
+        return $result;
+    }
+
+    /**
+     * public.databases.delete — DELETE /databases/{database_uuid}
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return null
+     */
+    public function delete(string $databaseUuid, array $params = [], RequestOptions|array|null $options = null): null
+    {
+        $this->operations->call('public.databases.delete', ['database_uuid' => $databaseUuid], $params, $options);
+
+        return null;
+    }
+
+    /**
+     * public.databases.dismissFinding — POST /databases/{database_uuid}/findings/{finding_uuid}/dismiss
+     *
+     * @param array{reason: string} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return DatabasesDismissFinding
+     */
+    public function dismissFinding(string $databaseUuid, string $findingUuid, array $params, RequestOptions|array|null $options = null): DatabasesDismissFinding
+    {
+        $result = $this->operations->call('public.databases.dismissFinding', ['database_uuid' => $databaseUuid, 'finding_uuid' => $findingUuid], $params, $options);
+        assert($result instanceof DatabasesDismissFinding);
+
+        return $result;
     }
 
     /**
@@ -53,6 +139,21 @@ class DatabasesService
     }
 
     /**
+     * public.databases.pause — POST /databases/{database_uuid}/pause
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return DatabasesPause
+     */
+    public function pause(string $databaseUuid, array $params = [], RequestOptions|array|null $options = null): DatabasesPause
+    {
+        $result = $this->operations->call('public.databases.pause', ['database_uuid' => $databaseUuid], $params, $options);
+        assert($result instanceof DatabasesPause);
+
+        return $result;
+    }
+
+    /**
      * public.databases.queries — GET /databases/{database_uuid}/queries
      *
      * @param array{from?: string, order?: 'asc'|'desc', period?: string, sort?: 'avg_time'|'calls'|'errors'|'impact'|'no_index'|'rows_examined'|'total_time', to?: string} $params
@@ -63,6 +164,81 @@ class DatabasesService
     {
         $result = $this->operations->call('public.databases.queries', ['database_uuid' => $databaseUuid], $params, $options);
         assert($result instanceof DatabasesQueries);
+
+        return $result;
+    }
+
+    /**
+     * public.databases.reassign — POST /databases/{database_uuid}/reassign
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return DatabasesReassign
+     */
+    public function reassign(string $databaseUuid, array $params = [], RequestOptions|array|null $options = null): DatabasesReassign
+    {
+        $result = $this->operations->call('public.databases.reassign', ['database_uuid' => $databaseUuid], $params, $options);
+        assert($result instanceof DatabasesReassign);
+
+        return $result;
+    }
+
+    /**
+     * public.databases.refreshSchema — POST /databases/{database_uuid}/schema-refresh
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return DatabasesRefreshSchema
+     */
+    public function refreshSchema(string $databaseUuid, array $params = [], RequestOptions|array|null $options = null): DatabasesRefreshSchema
+    {
+        $result = $this->operations->call('public.databases.refreshSchema', ['database_uuid' => $databaseUuid], $params, $options);
+        assert($result instanceof DatabasesRefreshSchema);
+
+        return $result;
+    }
+
+    /**
+     * public.databases.restoreFinding — POST /databases/{database_uuid}/findings/{finding_uuid}/restore
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return DatabasesRestoreFinding
+     */
+    public function restoreFinding(string $databaseUuid, string $findingUuid, array $params = [], RequestOptions|array|null $options = null): DatabasesRestoreFinding
+    {
+        $result = $this->operations->call('public.databases.restoreFinding', ['database_uuid' => $databaseUuid, 'finding_uuid' => $findingUuid], $params, $options);
+        assert($result instanceof DatabasesRestoreFinding);
+
+        return $result;
+    }
+
+    /**
+     * public.databases.resume — POST /databases/{database_uuid}/resume
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return DatabasesResume
+     */
+    public function resume(string $databaseUuid, array $params = [], RequestOptions|array|null $options = null): DatabasesResume
+    {
+        $result = $this->operations->call('public.databases.resume', ['database_uuid' => $databaseUuid], $params, $options);
+        assert($result instanceof DatabasesResume);
+
+        return $result;
+    }
+
+    /**
+     * public.databases.runAdvisor — POST /databases/{database_uuid}/advisor-run
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return DatabasesRunAdvisor
+     */
+    public function runAdvisor(string $databaseUuid, array $params = [], RequestOptions|array|null $options = null): DatabasesRunAdvisor
+    {
+        $result = $this->operations->call('public.databases.runAdvisor', ['database_uuid' => $databaseUuid], $params, $options);
+        assert($result instanceof DatabasesRunAdvisor);
 
         return $result;
     }
@@ -93,6 +269,36 @@ class DatabasesService
     {
         $result = $this->operations->call('public.databases.storage', ['database_uuid' => $databaseUuid], $params, $options);
         assert($result instanceof DatabasesStorage);
+
+        return $result;
+    }
+
+    /**
+     * public.databases.update — PUT /databases/{database_uuid}
+     *
+     * @param array{auth_method?: 'aws_iam'|'password'|'socket'|null, ca_source?: 'file'|'rds_bundle'|'system'|null, collectors?: array{all?: list<non-empty-string>|null, any?: list<non-empty-string>|null, selection?: 'servers'|'tags', servers?: list<non-empty-string>|null}|null, connection_type?: 'loopback'|'private_network'|'public_endpoint'|'socket'|null, credential_ref?: list<string>|null, description?: string|null, endpoint_host?: string|null, endpoint_port?: int<1, 65535>|null, host_server_uuid?: non-empty-string|null, name?: string, privacy_mode?: 'counts'|'hashed'|'identifiers'|null, provider?: string, provider_edition?: string|null, redaction_key_ref?: list<string>|null, setup_complete?: bool|null, socket_path?: string|null, storage?: array{ceiling_gib?: int<1, 65536>|null}, tag_uuids?: list<non-empty-string|null>|null, tls_mode?: 'none'|'skip_verify'|'verify_ca'|'verify_identity'|null, tls_server_name?: string|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return DatabasesUpdate
+     */
+    public function update(string $databaseUuid, array $params = [], RequestOptions|array|null $options = null): DatabasesUpdate
+    {
+        $result = $this->operations->call('public.databases.update', ['database_uuid' => $databaseUuid], $params, $options);
+        assert($result instanceof DatabasesUpdate);
+
+        return $result;
+    }
+
+    /**
+     * public.databases.verify — POST /databases/{database_uuid}/verify
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return DatabasesVerify
+     */
+    public function verify(string $databaseUuid, array $params = [], RequestOptions|array|null $options = null): DatabasesVerify
+    {
+        $result = $this->operations->call('public.databases.verify', ['database_uuid' => $databaseUuid], $params, $options);
+        assert($result instanceof DatabasesVerify);
 
         return $result;
     }

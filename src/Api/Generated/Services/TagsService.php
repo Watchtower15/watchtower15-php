@@ -6,7 +6,10 @@ declare(strict_types=1);
 
 namespace WatchTower15\Api\Generated\Services;
 
+use WatchTower15\Api\Generated\Models\TagsCreate;
 use WatchTower15\Api\Generated\Models\TagsListItem;
+use WatchTower15\Api\Generated\Models\TagsUpdate;
+use WatchTower15\Api\Generated\Models\TagsView;
 use WatchTower15\Api\Operations;
 use WatchTower15\Api\Page;
 use WatchTower15\Http\RequestOptions;
@@ -15,6 +18,35 @@ class TagsService
 {
     public function __construct(protected readonly Operations $operations)
     {
+    }
+
+    /**
+     * public.tags.create — POST /tags
+     *
+     * @param array{name: string, tag_group_uuid: non-empty-string} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return TagsCreate
+     */
+    public function create(array $params, RequestOptions|array|null $options = null): TagsCreate
+    {
+        $result = $this->operations->call('public.tags.create', [], $params, $options);
+        assert($result instanceof TagsCreate);
+
+        return $result;
+    }
+
+    /**
+     * public.tags.delete — DELETE /tags/{tag_uuid}
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return null
+     */
+    public function delete(string $tagUuid, array $params = [], RequestOptions|array|null $options = null): null
+    {
+        $this->operations->call('public.tags.delete', ['tag_uuid' => $tagUuid], $params, $options);
+
+        return null;
     }
 
     /**
@@ -30,5 +62,35 @@ class TagsService
         $page = $this->operations->page('public.tags.list', [], $params, $options);
 
         return $page;
+    }
+
+    /**
+     * public.tags.update — PUT /tags/{tag_uuid}
+     *
+     * @param array{name: string} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return TagsUpdate
+     */
+    public function update(string $tagUuid, array $params, RequestOptions|array|null $options = null): TagsUpdate
+    {
+        $result = $this->operations->call('public.tags.update', ['tag_uuid' => $tagUuid], $params, $options);
+        assert($result instanceof TagsUpdate);
+
+        return $result;
+    }
+
+    /**
+     * public.tags.view — GET /tags/{tag_uuid}
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return TagsView
+     */
+    public function view(string $tagUuid, array $params = [], RequestOptions|array|null $options = null): TagsView
+    {
+        $result = $this->operations->call('public.tags.view', ['tag_uuid' => $tagUuid], $params, $options);
+        assert($result instanceof TagsView);
+
+        return $result;
     }
 }

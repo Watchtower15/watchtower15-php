@@ -6,8 +6,12 @@ declare(strict_types=1);
 
 namespace WatchTower15\Api\Generated\Services;
 
+use WatchTower15\Api\Generated\Models\CustomMetricsApprove;
+use WatchTower15\Api\Generated\Models\CustomMetricsCreate;
 use WatchTower15\Api\Generated\Models\CustomMetricsListItem;
+use WatchTower15\Api\Generated\Models\CustomMetricsResetSeries;
 use WatchTower15\Api\Generated\Models\CustomMetricsSeries;
+use WatchTower15\Api\Generated\Models\CustomMetricsUpdate;
 use WatchTower15\Api\Generated\Models\CustomMetricsView;
 use WatchTower15\Api\Operations;
 use WatchTower15\Api\Page;
@@ -17,6 +21,64 @@ class CustomMetricsService
 {
     public function __construct(protected readonly Operations $operations)
     {
+    }
+
+    /**
+     * public.customMetrics.approve — POST /custom-metrics/{custom_metric_uuid}/approve
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return CustomMetricsApprove
+     */
+    public function approve(string $customMetricUuid, array $params = [], RequestOptions|array|null $options = null): CustomMetricsApprove
+    {
+        $result = $this->operations->call('public.customMetrics.approve', ['custom_metric_uuid' => $customMetricUuid], $params, $options);
+        assert($result instanceof CustomMetricsApprove);
+
+        return $result;
+    }
+
+    /**
+     * public.customMetrics.create — POST /custom-metrics
+     *
+     * @param array{active?: bool|null, description?: string|null, linked_server_all_tag_uuids?: list<non-empty-string>|null, linked_server_any_tag_uuids?: list<non-empty-string>|null, linked_server_uuids?: list<non-empty-string>|null, max_backfill_points_per_day?: int<1, 86400000>|null, max_points_per_day?: int<1, 86400000>|null, metric_key: string, metric_source_uuid: non-empty-string, metric_type?: 'count'|'level'|null, name?: string|null, tag_uuids?: list<non-empty-string|null>|null, unit?: string|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return CustomMetricsCreate
+     */
+    public function create(array $params, RequestOptions|array|null $options = null): CustomMetricsCreate
+    {
+        $result = $this->operations->call('public.customMetrics.create', [], $params, $options);
+        assert($result instanceof CustomMetricsCreate);
+
+        return $result;
+    }
+
+    /**
+     * public.customMetrics.delete — DELETE /custom-metrics/{custom_metric_uuid}
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return null
+     */
+    public function delete(string $customMetricUuid, array $params = [], RequestOptions|array|null $options = null): null
+    {
+        $this->operations->call('public.customMetrics.delete', ['custom_metric_uuid' => $customMetricUuid], $params, $options);
+
+        return null;
+    }
+
+    /**
+     * public.customMetrics.discard — POST /custom-metrics/{custom_metric_uuid}/discard
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return null
+     */
+    public function discard(string $customMetricUuid, array $params = [], RequestOptions|array|null $options = null): null
+    {
+        $this->operations->call('public.customMetrics.discard', ['custom_metric_uuid' => $customMetricUuid], $params, $options);
+
+        return null;
     }
 
     /**
@@ -35,6 +97,21 @@ class CustomMetricsService
     }
 
     /**
+     * public.customMetrics.resetSeries — POST /custom-metrics/{custom_metric_uuid}/reset-series
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return CustomMetricsResetSeries
+     */
+    public function resetSeries(string $customMetricUuid, array $params = [], RequestOptions|array|null $options = null): CustomMetricsResetSeries
+    {
+        $result = $this->operations->call('public.customMetrics.resetSeries', ['custom_metric_uuid' => $customMetricUuid], $params, $options);
+        assert($result instanceof CustomMetricsResetSeries);
+
+        return $result;
+    }
+
+    /**
      * public.customMetrics.series — GET /custom-metrics/{custom_metric_uuid}/series
      *
      * @param array{from?: string, period?: string, to?: string} $params
@@ -45,6 +122,21 @@ class CustomMetricsService
     {
         $result = $this->operations->call('public.customMetrics.series', ['custom_metric_uuid' => $customMetricUuid], $params, $options);
         assert($result instanceof CustomMetricsSeries);
+
+        return $result;
+    }
+
+    /**
+     * public.customMetrics.update — PUT /custom-metrics/{custom_metric_uuid}
+     *
+     * @param array{active?: bool|null, description?: string|null, linked_server_all_tag_uuids?: list<non-empty-string>|null, linked_server_any_tag_uuids?: list<non-empty-string>|null, linked_server_uuids?: list<non-empty-string>|null, max_backfill_points_per_day?: int<1, 86400000>|null, max_points_per_day?: int<1, 86400000>|null, metric_type?: 'count'|'level'|null, name?: string|null, tag_uuids?: list<non-empty-string|null>|null, unit?: string|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return CustomMetricsUpdate
+     */
+    public function update(string $customMetricUuid, array $params = [], RequestOptions|array|null $options = null): CustomMetricsUpdate
+    {
+        $result = $this->operations->call('public.customMetrics.update', ['custom_metric_uuid' => $customMetricUuid], $params, $options);
+        assert($result instanceof CustomMetricsUpdate);
 
         return $result;
     }

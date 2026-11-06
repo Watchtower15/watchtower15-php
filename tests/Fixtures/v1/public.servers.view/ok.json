@@ -2,6 +2,11 @@
   "data": {
     "uuid": "5f0c2e8a-1b0d-4c7e-9a52-0d3f6b8e4a11",
     "name": "x",
+    "display_name": "x",
+    "server_profile": {
+      "uuid": "5f0c2e8a-1b0d-4c7e-9a52-0d3f6b8e4a11",
+      "name": "x"
+    },
     "hostname": "x",
     "ip_address": "x",
     "os_type": "x",

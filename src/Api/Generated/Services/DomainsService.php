@@ -7,9 +7,13 @@ declare(strict_types=1);
 namespace WatchTower15\Api\Generated\Services;
 
 use WatchTower15\Api\Generated\Models\DomainsChangesItem;
+use WatchTower15\Api\Generated\Models\DomainsCheckVerification;
+use WatchTower15\Api\Generated\Models\DomainsCreate;
 use WatchTower15\Api\Generated\Models\DomainsListItem;
 use WatchTower15\Api\Generated\Models\DomainsRunScan;
 use WatchTower15\Api\Generated\Models\DomainsScansItem;
+use WatchTower15\Api\Generated\Models\DomainsStartVerification;
+use WatchTower15\Api\Generated\Models\DomainsUpdate;
 use WatchTower15\Api\Generated\Models\DomainsUptime;
 use WatchTower15\Api\Generated\Models\DomainsView;
 use WatchTower15\Api\Operations;
@@ -35,6 +39,50 @@ class DomainsService
         $page = $this->operations->page('public.domains.changes', ['domain_uuid' => $domainUuid], $params, $options);
 
         return $page;
+    }
+
+    /**
+     * public.domains.checkVerification — POST /domains/{domain_uuid}/verification/check
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return DomainsCheckVerification
+     */
+    public function checkVerification(string $domainUuid, array $params = [], RequestOptions|array|null $options = null): DomainsCheckVerification
+    {
+        $result = $this->operations->call('public.domains.checkVerification', ['domain_uuid' => $domainUuid], $params, $options);
+        assert($result instanceof DomainsCheckVerification);
+
+        return $result;
+    }
+
+    /**
+     * public.domains.create — POST /domains
+     *
+     * @param array{active?: bool|null, checks?: array{http_non_www?: bool|null, http_www?: bool|null, https_non_www?: bool|null, https_www?: bool|null}, name: string, notes?: string|null, scans_enabled?: array{dns?: bool|null, expiry?: bool|null, reachability?: bool|null, ssl?: bool|null, whois?: bool|null}, tag_uuids?: list<non-empty-string|null>|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return DomainsCreate
+     */
+    public function create(array $params, RequestOptions|array|null $options = null): DomainsCreate
+    {
+        $result = $this->operations->call('public.domains.create', [], $params, $options);
+        assert($result instanceof DomainsCreate);
+
+        return $result;
+    }
+
+    /**
+     * public.domains.delete — DELETE /domains/{domain_uuid}
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return null
+     */
+    public function delete(string $domainUuid, array $params = [], RequestOptions|array|null $options = null): null
+    {
+        $this->operations->call('public.domains.delete', ['domain_uuid' => $domainUuid], $params, $options);
+
+        return null;
     }
 
     /**
@@ -81,6 +129,36 @@ class DomainsService
         $page = $this->operations->page('public.domains.scans', ['domain_uuid' => $domainUuid], $params, $options);
 
         return $page;
+    }
+
+    /**
+     * public.domains.startVerification — POST /domains/{domain_uuid}/verification
+     *
+     * @param array{authorised: '1'|'on'|'true'|'yes'} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return DomainsStartVerification
+     */
+    public function startVerification(string $domainUuid, array $params, RequestOptions|array|null $options = null): DomainsStartVerification
+    {
+        $result = $this->operations->call('public.domains.startVerification', ['domain_uuid' => $domainUuid], $params, $options);
+        assert($result instanceof DomainsStartVerification);
+
+        return $result;
+    }
+
+    /**
+     * public.domains.update — PUT /domains/{domain_uuid}
+     *
+     * @param array{active: bool, checks?: array{http_non_www?: bool|null, http_www?: bool|null, https_non_www?: bool|null, https_www?: bool|null}, notes?: string|null, scans_enabled?: array{dns?: bool|null, expiry?: bool|null, reachability?: bool|null, ssl?: bool|null, whois?: bool|null}, tag_uuids?: list<non-empty-string|null>|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return DomainsUpdate
+     */
+    public function update(string $domainUuid, array $params, RequestOptions|array|null $options = null): DomainsUpdate
+    {
+        $result = $this->operations->call('public.domains.update', ['domain_uuid' => $domainUuid], $params, $options);
+        assert($result instanceof DomainsUpdate);
+
+        return $result;
     }
 
     /**
