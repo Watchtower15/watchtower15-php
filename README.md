@@ -371,6 +371,9 @@ $wt15->tags->update($tag->uuid, ['name' => 'prod']);
 $wt15->tags->delete($tag->uuid);
 ```
 
+A write returns the operation's own model, with the view's fields: `servers->provision()` a `ServersProvision`, `services->runNow()` a
+`ServicesRunNow` beside `ServicesView`, and so on, so a model's name is the operation's, not the area's.
+
 A secret is shown once, in the answer of the call that made it: the enrollment token of `servers->provision()` and
 `servers->rotateToken()`, and the token of `metricSources->rotateToken()` and `logSources->rotateToken()`. A call that is
 replayed from its first try (your own repeat with the same key, or the SDK's own retry after a lost answer) answers the same
