@@ -22,8 +22,8 @@ composer require watchtower15/sdk
   (PHP 8.6: 19 November 2026).
 - **Frameworks.** Laravel 12 and 13; Symfony 6.4, 7.4 and 8.x (8.x on PHP 8.4 and later); CakePHP 5.1 and later. A
   framework version is dropped in the first minor release after its own security support ends.
-- **Versions.** [Semantic Versioning](https://semver.org), independent of the API's `v1`. A new API operation is a minor
-  release; raising the PHP floor is a minor release announced one release ahead; a change to the SDK's own signatures,
+- **Versions.** [Semantic Versioning](https://semver.org), independent of the API's `v1`. A new API operation is additive and ships in the
+  next release; raising the PHP floor is a minor release announced one release ahead; a change to the SDK's own signatures,
   array shapes or property types is a major release. All four packages are released together, at one version.
 - **Tested.** Every release is tested on these corners:
 
