@@ -21,6 +21,9 @@
     "utc_offset_seconds": 1,
     "in_container": true,
     "health_status": "x",
+    "security_health_status": "x",
+    "monitoring_health_status": "x",
+    "overall_health_status": "x",
     "active": true,
     "archived_at": 1798761600000,
     "agent": {

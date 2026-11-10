@@ -11,7 +11,7 @@ use WatchTower15\Api\Hydratable;
 /** What the runtime reads: one row per generated operation. */
 final class OperationTable
 {
-    public const SPEC_SHA256 = '75caeab41708c84f523bf33972aecba64a6030cbff1537aab926eb144e45fd85';
+    public const SPEC_SHA256 = '44b5423c0b85878434a33a36ead0357a87f86805c7b785d49507fd41409e41da';
 
     /**
      * @var array<string, array{method: string, path: string, pathParams: list<string>, query: list<string>, body: list<string>|null, paged: bool, meta: class-string<Hydratable>|null, model: class-string<Hydratable>|null, status: int, idempotent: bool}>
@@ -1186,7 +1186,7 @@ final class OperationTable
             'path' => '/services',
             'pathParams' => [],
             'query' => [],
-            'body' => ['active', 'check_interval_seconds', 'collectors', 'expected_http_statuses', 'expected_response_contains', 'follow_redirects', 'host', 'member_limit', 'name', 'notes', 'parameters', 'path', 'pool_mode', 'port', 'protocol', 'quorum_n', 'request_auth', 'request_body', 'request_headers', 'request_method', 'response_empty', 'response_monitor_enabled', 'response_type', 'tag_uuids', 'timeout_seconds', 'tls_verify'],
+            'body' => ['active', 'check_interval_seconds', 'collectors', 'expected_http_statuses', 'expected_response_contains', 'follow_redirects', 'host', 'member_limit', 'name', 'notes', 'parameters', 'path', 'pool_mode', 'port', 'protocol', 'quorum_n', 'request_auth', 'request_body', 'request_headers', 'request_method', 'response_empty', 'response_monitor_enabled', 'response_type', 'smtp_tls_mode', 'tag_uuids', 'timeout_seconds', 'tls_verify'],
             'paged' => false,
             'meta' => null,
             'model' => \WatchTower15\Api\Generated\Models\ServicesCreate::class,
@@ -1306,7 +1306,7 @@ final class OperationTable
             'path' => '/services/{service_uuid}',
             'pathParams' => ['service_uuid'],
             'query' => [],
-            'body' => ['active', 'check_interval_seconds', 'collectors', 'expected_http_statuses', 'expected_response_contains', 'follow_redirects', 'host', 'member_limit', 'name', 'notes', 'parameters', 'path', 'pool_mode', 'port', 'protocol', 'quorum_n', 'request_auth', 'request_body', 'request_headers', 'request_method', 'response_empty', 'response_monitor_enabled', 'response_type', 'tag_uuids', 'timeout_seconds', 'tls_verify'],
+            'body' => ['active', 'check_interval_seconds', 'collectors', 'expected_http_statuses', 'expected_response_contains', 'follow_redirects', 'host', 'member_limit', 'name', 'notes', 'parameters', 'path', 'pool_mode', 'port', 'protocol', 'quorum_n', 'request_auth', 'request_body', 'request_headers', 'request_method', 'response_empty', 'response_monitor_enabled', 'response_type', 'smtp_tls_mode', 'tag_uuids', 'timeout_seconds', 'tls_verify'],
             'paged' => false,
             'meta' => null,
             'model' => \WatchTower15\Api\Generated\Models\ServicesUpdate::class,

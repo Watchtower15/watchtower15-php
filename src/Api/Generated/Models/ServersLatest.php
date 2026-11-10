@@ -21,7 +21,10 @@ final readonly class ServersLatest implements Hydratable
         public ?\DateTimeImmutable $bootedAt,
         public ?string $connectivityState,
         public string $healthStatus,
+        public string $monitoringHealthStatus,
+        public string $overallHealthStatus,
         public ?ServersLatestSample $sample,
+        public string $securityHealthStatus,
         public string $uuid,
         private array $raw = [],
     ) {
@@ -39,7 +42,10 @@ final readonly class ServersLatest implements Hydratable
             bootedAt: isset($data['booted_at']) ? Hydrate::instant($data['booted_at']) : null,
             connectivityState: isset($data['connectivity_state']) ? Hydrate::string($data['connectivity_state']) : null,
             healthStatus: Hydrate::string($data['health_status'] ?? null),
+            monitoringHealthStatus: Hydrate::string($data['monitoring_health_status'] ?? null),
+            overallHealthStatus: Hydrate::string($data['overall_health_status'] ?? null),
             sample: isset($data['sample']) ? ServersLatestSample::fromArray(Hydrate::array($data['sample'])) : null,
+            securityHealthStatus: Hydrate::string($data['security_health_status'] ?? null),
             uuid: Hydrate::string($data['uuid'] ?? null),
             raw: $data,
         );
