@@ -11,7 +11,7 @@ use WatchTower15\Api\Hydratable;
 /** What the runtime reads: one row per generated operation. */
 final class OperationTable
 {
-    public const SPEC_SHA256 = '44b5423c0b85878434a33a36ead0357a87f86805c7b785d49507fd41409e41da';
+    public const SPEC_SHA256 = 'c11ef8e38892be0bef9739748ed3f3f10c4fcb6d293a75265e3def05692ebb36';
 
     /**
      * @var array<string, array{method: string, path: string, pathParams: list<string>, query: list<string>, body: list<string>|null, paged: bool, meta: class-string<Hydratable>|null, model: class-string<Hydratable>|null, status: int, idempotent: bool}>
