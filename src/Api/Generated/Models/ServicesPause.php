@@ -13,6 +13,7 @@ final readonly class ServicesPause implements Hydratable
 {
     /**
      * @param list<int> $expectedHttpStatuses
+     * @param list<ServicesPauseResponseAssertionsItem> $responseAssertions
      * @param list<ServicesPauseTagsItem> $tags
      * @param array<string, mixed> $raw The answer as the server sent it, unknown fields included.
      */
@@ -38,6 +39,7 @@ final readonly class ServicesPause implements Hydratable
         public ?int $quorumN,
         public ServicesPauseRequestAuth $requestAuth,
         public ?string $requestMethod,
+        public array $responseAssertions,
         public bool $responseMonitorEnabled,
         public ?string $responseType,
         public ?string $smtpTlsMode,
@@ -77,6 +79,7 @@ final readonly class ServicesPause implements Hydratable
             quorumN: isset($data['quorum_n']) ? Hydrate::int($data['quorum_n']) : null,
             requestAuth: ServicesPauseRequestAuth::fromArray(Hydrate::array($data['request_auth'] ?? null)),
             requestMethod: isset($data['request_method']) ? Hydrate::string($data['request_method']) : null,
+            responseAssertions: Hydrate::list($data['response_assertions'] ?? null, static fn (mixed $row): ServicesPauseResponseAssertionsItem => ServicesPauseResponseAssertionsItem::fromArray(Hydrate::array($row))),
             responseMonitorEnabled: Hydrate::bool($data['response_monitor_enabled'] ?? null),
             responseType: isset($data['response_type']) ? Hydrate::string($data['response_type']) : null,
             smtpTlsMode: isset($data['smtp_tls_mode']) ? Hydrate::string($data['smtp_tls_mode']) : null,

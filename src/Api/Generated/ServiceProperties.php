@@ -6,6 +6,8 @@ declare(strict_types=1);
 
 namespace WatchTower15\Api\Generated;
 
+use WatchTower15\Api\Generated\Services\AlarmChannelsService;
+use WatchTower15\Api\Generated\Services\AlarmPoliciesService;
 use WatchTower15\Api\Generated\Services\AlarmsService;
 use WatchTower15\Api\Generated\Services\CustomMetricsService;
 use WatchTower15\Api\Generated\Services\DatabasesService;
@@ -26,6 +28,8 @@ use WatchTower15\Api\Services\ScansService;
 /** One service per area of the API; the client uses this and calls `initialiseServices()` once. */
 trait ServiceProperties
 {
+    public readonly AlarmChannelsService $alarmChannels;
+    public readonly AlarmPoliciesService $alarmPolicies;
     public readonly AlarmsService $alarms;
     public readonly CustomMetricsService $customMetrics;
     public readonly DatabasesService $databases;
@@ -44,6 +48,8 @@ trait ServiceProperties
 
     private function initialiseServices(Operations $operations): void
     {
+        $this->alarmChannels = new AlarmChannelsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
+        $this->alarmPolicies = new AlarmPoliciesService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->alarms = new AlarmsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->customMetrics = new CustomMetricsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->databases = new DatabasesService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor

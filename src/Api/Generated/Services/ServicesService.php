@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace WatchTower15\Api\Generated\Services;
 
 use WatchTower15\Api\Generated\Models\ServicesCollectorPreview;
+use WatchTower15\Api\Generated\Models\ServicesCollectors;
 use WatchTower15\Api\Generated\Models\ServicesCreate;
 use WatchTower15\Api\Generated\Models\ServicesListItem;
 use WatchTower15\Api\Generated\Models\ServicesPause;
@@ -14,6 +15,9 @@ use WatchTower15\Api\Generated\Models\ServicesReassign;
 use WatchTower15\Api\Generated\Models\ServicesResume;
 use WatchTower15\Api\Generated\Models\ServicesRunNow;
 use WatchTower15\Api\Generated\Models\ServicesScansItem;
+use WatchTower15\Api\Generated\Models\ServicesTestRunsStartNew;
+use WatchTower15\Api\Generated\Models\ServicesTestRunsStartSaved;
+use WatchTower15\Api\Generated\Models\ServicesTestRunsView;
 use WatchTower15\Api\Generated\Models\ServicesUpdate;
 use WatchTower15\Api\Generated\Models\ServicesVerify;
 use WatchTower15\Api\Generated\Models\ServicesView;
@@ -43,9 +47,24 @@ class ServicesService
     }
 
     /**
+     * public.services.collectors — GET /services/{service_uuid}/collectors
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return ServicesCollectors
+     */
+    public function collectors(string $serviceUuid, array $params = [], RequestOptions|array|null $options = null): ServicesCollectors
+    {
+        $result = $this->operations->call('public.services.collectors', ['service_uuid' => $serviceUuid], $params, $options);
+        assert($result instanceof ServicesCollectors);
+
+        return $result;
+    }
+
+    /**
      * public.services.create — POST /services
      *
-     * @param array{active?: bool|null, check_interval_seconds?: int<60, 86400>|null, collectors: array{all?: list<non-empty-string>|null, any?: list<non-empty-string>|null, selection?: 'servers'|'tags', servers?: list<non-empty-string>|null}, expected_http_statuses?: list<int<100, 599>>|null, expected_response_contains?: string|null, follow_redirects?: bool|null, host: string, member_limit?: int<1, 200>|null, name: string, notes?: string|null, parameters?: list<string>|null, path?: string|null, pool_mode?: 'active_standby'|'all_members'|null, port: int<1, 65535>, protocol: 'http'|'https'|'smtp'|'tcp'|'udp', quorum_n?: int<1, 200>|null, request_auth?: array{password?: string|null, token?: string|null, type?: 'basic'|'bearer'|'none', username?: string|null}|null, request_body?: string|null, request_headers?: list<string>|null, request_method?: 'DELETE'|'GET'|'HEAD'|'PATCH'|'POST'|'PUT'|null, response_empty?: bool|null, response_monitor_enabled?: bool|null, response_type?: 'json'|'xml'|null, smtp_tls_mode?: 'implicit'|'none'|'starttls'|null, tag_uuids?: list<non-empty-string|null>|null, timeout_seconds?: int<5, 120>|null, tls_verify?: bool|null} $params
+     * @param array{active?: bool|null, check_interval_seconds?: int<60, 86400>|null, collectors: array{all?: list<non-empty-string>|null, any?: list<non-empty-string>|null, selection?: 'servers'|'tags', servers?: list<non-empty-string>|null}, expected_http_statuses?: list<int<100, 599>>|null, expected_response_contains?: string|null, follow_redirects?: bool|null, host: string, member_limit?: int<1, 200>|null, name: string, notes?: string|null, parameters?: list<string>|null, path?: string|null, pool_mode?: 'active_standby'|'all_members'|null, port: int<1, 65535>, protocol: 'http'|'https'|'smtp'|'tcp'|'udp', quorum_n?: int<1, 200>|null, request_auth?: array{password?: string|null, token?: string|null, type?: 'basic'|'bearer'|'none', username?: string|null}|null, request_body?: string|null, request_headers?: list<string>|null, request_method?: 'DELETE'|'GET'|'HEAD'|'PATCH'|'POST'|'PUT'|null, response_assertions?: list<array{comparison: 'contains'|'equals'|'exists'|'gt'|'gte'|'lt'|'lte'|'matches'|'not_contains'|'not_equals'|'not_exists', select?: string|null, value?: string|null}>|null, response_empty?: bool|null, response_monitor_enabled?: bool|null, response_type?: 'json'|'xml'|null, smtp_tls_mode?: 'implicit'|'none'|'starttls'|null, tag_uuids?: list<non-empty-string|null>|null, timeout_seconds?: int<5, 120>|null, tls_verify?: bool|null} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
      * @return ServicesCreate
      */
@@ -194,9 +213,54 @@ class ServicesService
     }
 
     /**
+     * public.services.testRunsStartNew — POST /services/test-runs
+     *
+     * @param array{active?: bool|null, check_interval_seconds?: int<60, 86400>|null, collectors: array{all?: list<non-empty-string>|null, any?: list<non-empty-string>|null, selection?: 'servers'|'tags', servers?: list<non-empty-string>|null}, expected_http_statuses?: list<int<100, 599>>|null, expected_response_contains?: string|null, follow_redirects?: bool|null, host: string, member_limit?: int<1, 200>|null, name: string, notes?: string|null, parameters?: list<string>|null, path?: string|null, pool_mode?: 'active_standby'|'all_members'|null, port: int<1, 65535>, protocol: 'http'|'https'|'smtp'|'tcp'|'udp', quorum_n?: int<1, 200>|null, request_auth?: array{password?: string|null, token?: string|null, type?: 'basic'|'bearer'|'none', username?: string|null}|null, request_body?: string|null, request_headers?: list<string>|null, request_method?: 'DELETE'|'GET'|'HEAD'|'PATCH'|'POST'|'PUT'|null, response_assertions?: list<array{comparison: 'contains'|'equals'|'exists'|'gt'|'gte'|'lt'|'lte'|'matches'|'not_contains'|'not_equals'|'not_exists', select?: string|null, value?: string|null}>|null, response_empty?: bool|null, response_monitor_enabled?: bool|null, response_type?: 'json'|'xml'|null, smtp_tls_mode?: 'implicit'|'none'|'starttls'|null, tag_uuids?: list<non-empty-string|null>|null, timeout_seconds?: int<5, 120>|null, tls_verify?: bool|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServicesTestRunsStartNew
+     */
+    public function testRunsStartNew(array $params, RequestOptions|array|null $options = null): ServicesTestRunsStartNew
+    {
+        $result = $this->operations->call('public.services.testRunsStartNew', [], $params, $options);
+        assert($result instanceof ServicesTestRunsStartNew);
+
+        return $result;
+    }
+
+    /**
+     * public.services.testRunsStartSaved — POST /services/{service_uuid}/test-runs
+     *
+     * @param array{active: bool, check_interval_seconds?: int<60, 86400>|null, collectors?: array{all?: list<non-empty-string>|null, any?: list<non-empty-string>|null, selection?: 'servers'|'tags', servers?: list<non-empty-string>|null}|null, expected_http_statuses?: list<int<100, 599>>|null, expected_response_contains?: string|null, follow_redirects?: bool|null, host: string, member_limit?: int<1, 200>|null, name: string, notes?: string|null, parameters?: list<string>|null, path?: string|null, pool_mode?: 'active_standby'|'all_members'|null, port: int<1, 65535>, protocol?: 'http'|'https'|'smtp'|'tcp'|'udp'|null, quorum_n?: int<1, 200>|null, request_auth?: array{password?: string|null, token?: string|null, type?: 'basic'|'bearer'|'none', username?: string|null}|null, request_body?: string|null, request_headers?: list<string>|null, request_method?: 'DELETE'|'GET'|'HEAD'|'PATCH'|'POST'|'PUT'|null, response_assertions?: list<array{comparison: 'contains'|'equals'|'exists'|'gt'|'gte'|'lt'|'lte'|'matches'|'not_contains'|'not_equals'|'not_exists', select?: string|null, value?: string|null}>|null, response_empty?: bool|null, response_monitor_enabled?: bool|null, response_type?: 'json'|'xml'|null, smtp_tls_mode?: 'implicit'|'none'|'starttls'|null, tag_uuids?: list<non-empty-string|null>|null, timeout_seconds?: int<5, 120>|null, tls_verify?: bool|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServicesTestRunsStartSaved
+     */
+    public function testRunsStartSaved(string $serviceUuid, array $params, RequestOptions|array|null $options = null): ServicesTestRunsStartSaved
+    {
+        $result = $this->operations->call('public.services.testRunsStartSaved', ['service_uuid' => $serviceUuid], $params, $options);
+        assert($result instanceof ServicesTestRunsStartSaved);
+
+        return $result;
+    }
+
+    /**
+     * public.services.testRunsView — GET /services/test-runs/{test_uuid}
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return ServicesTestRunsView
+     */
+    public function testRunsView(string $testUuid, array $params = [], RequestOptions|array|null $options = null): ServicesTestRunsView
+    {
+        $result = $this->operations->call('public.services.testRunsView', ['test_uuid' => $testUuid], $params, $options);
+        assert($result instanceof ServicesTestRunsView);
+
+        return $result;
+    }
+
+    /**
      * public.services.update — PUT /services/{service_uuid}
      *
-     * @param array{active: bool, check_interval_seconds?: int<60, 86400>|null, collectors?: array{all?: list<non-empty-string>|null, any?: list<non-empty-string>|null, selection?: 'servers'|'tags', servers?: list<non-empty-string>|null}|null, expected_http_statuses?: list<int<100, 599>>|null, expected_response_contains?: string|null, follow_redirects?: bool|null, host: string, member_limit?: int<1, 200>|null, name: string, notes?: string|null, parameters?: list<string>|null, path?: string|null, pool_mode?: 'active_standby'|'all_members'|null, port: int<1, 65535>, protocol?: 'http'|'https'|'smtp'|'tcp'|'udp'|null, quorum_n?: int<1, 200>|null, request_auth?: array{password?: string|null, token?: string|null, type?: 'basic'|'bearer'|'none', username?: string|null}|null, request_body?: string|null, request_headers?: list<string>|null, request_method?: 'DELETE'|'GET'|'HEAD'|'PATCH'|'POST'|'PUT'|null, response_empty?: bool|null, response_monitor_enabled?: bool|null, response_type?: 'json'|'xml'|null, smtp_tls_mode?: 'implicit'|'none'|'starttls'|null, tag_uuids?: list<non-empty-string|null>|null, timeout_seconds?: int<5, 120>|null, tls_verify?: bool|null} $params
+     * @param array{active: bool, check_interval_seconds?: int<60, 86400>|null, collectors?: array{all?: list<non-empty-string>|null, any?: list<non-empty-string>|null, selection?: 'servers'|'tags', servers?: list<non-empty-string>|null}|null, expected_http_statuses?: list<int<100, 599>>|null, expected_response_contains?: string|null, follow_redirects?: bool|null, host: string, member_limit?: int<1, 200>|null, name: string, notes?: string|null, parameters?: list<string>|null, path?: string|null, pool_mode?: 'active_standby'|'all_members'|null, port: int<1, 65535>, protocol?: 'http'|'https'|'smtp'|'tcp'|'udp'|null, quorum_n?: int<1, 200>|null, request_auth?: array{password?: string|null, token?: string|null, type?: 'basic'|'bearer'|'none', username?: string|null}|null, request_body?: string|null, request_headers?: list<string>|null, request_method?: 'DELETE'|'GET'|'HEAD'|'PATCH'|'POST'|'PUT'|null, response_assertions?: list<array{comparison: 'contains'|'equals'|'exists'|'gt'|'gte'|'lt'|'lte'|'matches'|'not_contains'|'not_equals'|'not_exists', select?: string|null, value?: string|null}>|null, response_empty?: bool|null, response_monitor_enabled?: bool|null, response_type?: 'json'|'xml'|null, smtp_tls_mode?: 'implicit'|'none'|'starttls'|null, tag_uuids?: list<non-empty-string|null>|null, timeout_seconds?: int<5, 120>|null, tls_verify?: bool|null} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
      * @return ServicesUpdate
      */
