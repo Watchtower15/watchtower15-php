@@ -14,12 +14,16 @@ use WatchTower15\Api\Generated\Models\ServersIncidentsItem;
 use WatchTower15\Api\Generated\Models\ServersLatest;
 use WatchTower15\Api\Generated\Models\ServersListItem;
 use WatchTower15\Api\Generated\Models\ServersMetrics;
+use WatchTower15\Api\Generated\Models\ServersOsUpdates;
+use WatchTower15\Api\Generated\Models\ServersOsUpdatesPackagesItem;
+use WatchTower15\Api\Generated\Models\ServersOsUpdatesPackagesMeta;
 use WatchTower15\Api\Generated\Models\ServersPortsItem;
 use WatchTower15\Api\Generated\Models\ServersPortsMeta;
 use WatchTower15\Api\Generated\Models\ServersProcessesItem;
 use WatchTower15\Api\Generated\Models\ServersProcessesMeta;
 use WatchTower15\Api\Generated\Models\ServersProvision;
 use WatchTower15\Api\Generated\Models\ServersReactivate;
+use WatchTower15\Api\Generated\Models\ServersRecheckOsUpdates;
 use WatchTower15\Api\Generated\Models\ServersRecheckPosture;
 use WatchTower15\Api\Generated\Models\ServersRestoreSecurityFinding;
 use WatchTower15\Api\Generated\Models\ServersRevoke;
@@ -177,6 +181,36 @@ class ServersService
     }
 
     /**
+     * public.servers.osUpdates — GET /servers/{server_uuid}/os-updates
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return ServersOsUpdates
+     */
+    public function osUpdates(string $serverUuid, array $params = [], RequestOptions|array|null $options = null): ServersOsUpdates
+    {
+        $result = $this->operations->call('public.servers.osUpdates', ['server_uuid' => $serverUuid], $params, $options);
+        assert($result instanceof ServersOsUpdates);
+
+        return $result;
+    }
+
+    /**
+     * public.servers.osUpdatesPackages — GET /servers/{server_uuid}/os-updates/packages
+     *
+     * @param array{cursor?: string, include_total?: bool, limit?: int<1, 100>, scope?: 'host'|'latest', security_only?: bool} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return Page<ServersOsUpdatesPackagesItem>
+     */
+    public function osUpdatesPackages(string $serverUuid, array $params = [], RequestOptions|array|null $options = null): Page
+    {
+        /** @var Page<ServersOsUpdatesPackagesItem> $page */
+        $page = $this->operations->page('public.servers.osUpdatesPackages', ['server_uuid' => $serverUuid], $params, $options);
+
+        return $page;
+    }
+
+    /**
      * public.servers.ports — GET /servers/{server_uuid}/ports
      *
      * @param array{cursor?: string, include_retired?: bool, include_total?: bool, limit?: int<1, 100>} $params
@@ -232,6 +266,21 @@ class ServersService
     {
         $result = $this->operations->call('public.servers.reactivate', ['server_uuid' => $serverUuid], $params, $options);
         assert($result instanceof ServersReactivate);
+
+        return $result;
+    }
+
+    /**
+     * public.servers.recheckOsUpdates — POST /servers/{server_uuid}/os-updates/recheck
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServersRecheckOsUpdates
+     */
+    public function recheckOsUpdates(string $serverUuid, array $params = [], RequestOptions|array|null $options = null): ServersRecheckOsUpdates
+    {
+        $result = $this->operations->call('public.servers.recheckOsUpdates', ['server_uuid' => $serverUuid], $params, $options);
+        assert($result instanceof ServersRecheckOsUpdates);
 
         return $result;
     }

@@ -11,7 +11,7 @@ use WatchTower15\Api\Hydratable;
 /** What the runtime reads: one row per generated operation. */
 final class OperationTable
 {
-    public const SPEC_SHA256 = '79c4ae72e52ead58b6abc5d0150c2d855b458377d86210b455220cff86cb5ac4';
+    public const SPEC_SHA256 = '409f6ce867b3e8ee388dea367cc7daa0eae6f41dad2a62c032b85e3e0ff6a69b';
 
     /**
      * @var array<string, array{method: string, path: string, pathParams: list<string>, query: list<string>, body: list<string>|null, paged: bool, meta: class-string<Hydratable>|null, model: class-string<Hydratable>|null, status: int, idempotent: bool}>
@@ -977,6 +977,30 @@ final class OperationTable
             'status' => 200,
             'idempotent' => true,
         ],
+        'public.servers.osUpdates' => [
+            'method' => 'GET',
+            'path' => '/servers/{server_uuid}/os-updates',
+            'pathParams' => ['server_uuid'],
+            'query' => [],
+            'body' => null,
+            'paged' => false,
+            'meta' => null,
+            'model' => \WatchTower15\Api\Generated\Models\ServersOsUpdates::class,
+            'status' => 200,
+            'idempotent' => true,
+        ],
+        'public.servers.osUpdatesPackages' => [
+            'method' => 'GET',
+            'path' => '/servers/{server_uuid}/os-updates/packages',
+            'pathParams' => ['server_uuid'],
+            'query' => ['cursor', 'include_total', 'limit', 'scope', 'security_only'],
+            'body' => null,
+            'paged' => true,
+            'meta' => \WatchTower15\Api\Generated\Models\ServersOsUpdatesPackagesMeta::class,
+            'model' => \WatchTower15\Api\Generated\Models\ServersOsUpdatesPackagesItem::class,
+            'status' => 200,
+            'idempotent' => true,
+        ],
         'public.servers.ports' => [
             'method' => 'GET',
             'path' => '/servers/{server_uuid}/ports',
@@ -1023,6 +1047,18 @@ final class OperationTable
             'meta' => null,
             'model' => \WatchTower15\Api\Generated\Models\ServersReactivate::class,
             'status' => 200,
+            'idempotent' => true,
+        ],
+        'public.servers.recheckOsUpdates' => [
+            'method' => 'POST',
+            'path' => '/servers/{server_uuid}/os-updates/recheck',
+            'pathParams' => ['server_uuid'],
+            'query' => [],
+            'body' => null,
+            'paged' => false,
+            'meta' => null,
+            'model' => \WatchTower15\Api\Generated\Models\ServersRecheckOsUpdates::class,
+            'status' => 202,
             'idempotent' => true,
         ],
         'public.servers.recheckPosture' => [
