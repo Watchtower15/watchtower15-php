@@ -7,11 +7,15 @@ declare(strict_types=1);
 namespace WatchTower15\Api\Generated\Services;
 
 use WatchTower15\Api\Generated\Models\DatabasesAcceptKey;
+use WatchTower15\Api\Generated\Models\DatabasesCollectorHistoryItem;
 use WatchTower15\Api\Generated\Models\DatabasesCollectorPreview;
+use WatchTower15\Api\Generated\Models\DatabasesCollectors;
+use WatchTower15\Api\Generated\Models\DatabasesCoverage;
 use WatchTower15\Api\Generated\Models\DatabasesCreate;
 use WatchTower15\Api\Generated\Models\DatabasesDismissFinding;
 use WatchTower15\Api\Generated\Models\DatabasesFindingsItem;
 use WatchTower15\Api\Generated\Models\DatabasesListItem;
+use WatchTower15\Api\Generated\Models\DatabasesMetrics;
 use WatchTower15\Api\Generated\Models\DatabasesPause;
 use WatchTower15\Api\Generated\Models\DatabasesQueries;
 use WatchTower15\Api\Generated\Models\DatabasesReassign;
@@ -50,6 +54,21 @@ class DatabasesService
     }
 
     /**
+     * public.databases.collectorHistory — GET /databases/{database_uuid}/collectors/history
+     *
+     * @param array{cursor?: string, from?: string, include_total?: bool, limit?: int<1, 100>, period?: string, to?: string} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return Page<DatabasesCollectorHistoryItem>
+     */
+    public function collectorHistory(string $databaseUuid, array $params = [], RequestOptions|array|null $options = null): Page
+    {
+        /** @var Page<DatabasesCollectorHistoryItem> $page */
+        $page = $this->operations->page('public.databases.collectorHistory', ['database_uuid' => $databaseUuid], $params, $options);
+
+        return $page;
+    }
+
+    /**
      * public.databases.collectorPreview — POST /databases/collector-preview
      *
      * @param array{all?: list<non-empty-string>|null, any?: list<non-empty-string>|null, selection: 'servers'|'tags', servers?: list<non-empty-string>|null} $params
@@ -60,6 +79,36 @@ class DatabasesService
     {
         $result = $this->operations->call('public.databases.collectorPreview', [], $params, $options);
         assert($result instanceof DatabasesCollectorPreview);
+
+        return $result;
+    }
+
+    /**
+     * public.databases.collectors — GET /databases/{database_uuid}/collectors
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return DatabasesCollectors
+     */
+    public function collectors(string $databaseUuid, array $params = [], RequestOptions|array|null $options = null): DatabasesCollectors
+    {
+        $result = $this->operations->call('public.databases.collectors', ['database_uuid' => $databaseUuid], $params, $options);
+        assert($result instanceof DatabasesCollectors);
+
+        return $result;
+    }
+
+    /**
+     * public.databases.coverage — GET /databases/{database_uuid}/coverage
+     *
+     * @param array{from?: string, period?: string, to?: string} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return DatabasesCoverage
+     */
+    public function coverage(string $databaseUuid, array $params = [], RequestOptions|array|null $options = null): DatabasesCoverage
+    {
+        $result = $this->operations->call('public.databases.coverage', ['database_uuid' => $databaseUuid], $params, $options);
+        assert($result instanceof DatabasesCoverage);
 
         return $result;
     }
@@ -136,6 +185,21 @@ class DatabasesService
         $page = $this->operations->page('public.databases.list', [], $params, $options);
 
         return $page;
+    }
+
+    /**
+     * public.databases.metrics — GET /databases/{database_uuid}/metrics
+     *
+     * @param array{from?: string, period?: string, set?: 'cloud', to?: string} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return DatabasesMetrics
+     */
+    public function metrics(string $databaseUuid, array $params = [], RequestOptions|array|null $options = null): DatabasesMetrics
+    {
+        $result = $this->operations->call('public.databases.metrics', ['database_uuid' => $databaseUuid], $params, $options);
+        assert($result instanceof DatabasesMetrics);
+
+        return $result;
     }
 
     /**

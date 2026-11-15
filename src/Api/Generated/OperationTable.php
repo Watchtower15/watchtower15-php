@@ -11,7 +11,7 @@ use WatchTower15\Api\Hydratable;
 /** What the runtime reads: one row per generated operation. */
 final class OperationTable
 {
-    public const SPEC_SHA256 = '84a7e3909083fb23bc559d109e4963177ddc47b4d426b65af1f2f9f254b8a93b';
+    public const SPEC_SHA256 = 'c6e1a2f2a59ec6c4895343daac1ba9c8c5a15eaad6c46067e6e2ea514f55e530';
 
     /**
      * @var array<string, array{method: string, path: string, pathParams: list<string>, query: list<string>, body: list<string>|null, paged: bool, meta: class-string<Hydratable>|null, model: class-string<Hydratable>|null, status: int, idempotent: bool}>
@@ -281,6 +281,18 @@ final class OperationTable
             'status' => 200,
             'idempotent' => true,
         ],
+        'public.databases.collectorHistory' => [
+            'method' => 'GET',
+            'path' => '/databases/{database_uuid}/collectors/history',
+            'pathParams' => ['database_uuid'],
+            'query' => ['cursor', 'from', 'include_total', 'limit', 'period', 'to'],
+            'body' => null,
+            'paged' => true,
+            'meta' => null,
+            'model' => \WatchTower15\Api\Generated\Models\DatabasesCollectorHistoryItem::class,
+            'status' => 200,
+            'idempotent' => true,
+        ],
         'public.databases.collectorPreview' => [
             'method' => 'POST',
             'path' => '/databases/collector-preview',
@@ -290,6 +302,30 @@ final class OperationTable
             'paged' => false,
             'meta' => null,
             'model' => \WatchTower15\Api\Generated\Models\DatabasesCollectorPreview::class,
+            'status' => 200,
+            'idempotent' => true,
+        ],
+        'public.databases.collectors' => [
+            'method' => 'GET',
+            'path' => '/databases/{database_uuid}/collectors',
+            'pathParams' => ['database_uuid'],
+            'query' => [],
+            'body' => null,
+            'paged' => false,
+            'meta' => null,
+            'model' => \WatchTower15\Api\Generated\Models\DatabasesCollectors::class,
+            'status' => 200,
+            'idempotent' => true,
+        ],
+        'public.databases.coverage' => [
+            'method' => 'GET',
+            'path' => '/databases/{database_uuid}/coverage',
+            'pathParams' => ['database_uuid'],
+            'query' => ['from', 'period', 'to'],
+            'body' => null,
+            'paged' => false,
+            'meta' => null,
+            'model' => \WatchTower15\Api\Generated\Models\DatabasesCoverage::class,
             'status' => 200,
             'idempotent' => true,
         ],
@@ -350,6 +386,18 @@ final class OperationTable
             'paged' => true,
             'meta' => null,
             'model' => \WatchTower15\Api\Generated\Models\DatabasesListItem::class,
+            'status' => 200,
+            'idempotent' => true,
+        ],
+        'public.databases.metrics' => [
+            'method' => 'GET',
+            'path' => '/databases/{database_uuid}/metrics',
+            'pathParams' => ['database_uuid'],
+            'query' => ['from', 'period', 'set', 'to'],
+            'body' => null,
+            'paged' => false,
+            'meta' => null,
+            'model' => \WatchTower15\Api\Generated\Models\DatabasesMetrics::class,
             'status' => 200,
             'idempotent' => true,
         ],
@@ -1507,7 +1555,7 @@ final class OperationTable
         ],
         'public.services.testRunsView' => [
             'method' => 'GET',
-            'path' => '/services/test-runs/{test_uuid}',
+            'path' => '/service-test-runs/{test_uuid}',
             'pathParams' => ['test_uuid'],
             'query' => [],
             'body' => null,

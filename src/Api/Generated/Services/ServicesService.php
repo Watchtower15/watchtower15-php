@@ -243,7 +243,7 @@ class ServicesService
     }
 
     /**
-     * public.services.testRunsView — GET /services/test-runs/{test_uuid}
+     * public.services.testRunsView — GET /service-test-runs/{test_uuid}
      *
      * @param array{} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
