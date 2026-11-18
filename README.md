@@ -37,6 +37,19 @@ composer require watchtower15/sdk
 - **Security fixes** ship in the newest minor release as a patch release at once (Composer blocks the install of a version
   with a published advisory). Report a vulnerability to the address in `SECURITY.md`.
 
+## Services in 1.0.4
+
+1.0.4 follows the public API's change to Services, and WatchTower15 chose to ship it as a patch, although the policy above makes such
+a change a major release, because the API removed these fields on 16 November 2026 and 1.0.3's Services models no longer described a
+Service.
+
+- `protocol`, `host`, `port`, `path`, `timeout_seconds` and the request and response fields (`request_method`, `request_auth`,
+  `response_assertions`, `expected_http_statuses`, `follow_redirects`, `smtp_tls_mode` and the rest) are gone from the Services
+  models and from the `$params` of `services->create()`, `update()`, `testRunsStartNew()` and `testRunsStartSaved()`. A Service
+  carries `steps`, `variables` and `run`; the list carries `step_count`, `step_types` and `run_budget_seconds`. The
+  `Services…RequestAuth` and `Services…ResponseAssertionsItem` models are removed.
+- `Enums\Kind` gains `Indicator`: a security finding's kind can be `indicator`.
+
 ## The three credentials
 
 A WatchTower15 call uses one of three credentials, each created in the console and each good for one job:
@@ -316,8 +329,9 @@ command reads only the process environment, never a framework's `.env` file: exp
 Every `/v1` operation is a method on a service named after its area: `$wt15->servers->list()`,
 `$wt15->domains->runScan($domainUuid, 'ssl')`, `$wt15->incidents->acknowledge($incidentUuid)`. The method is the action of
 the operation's id (`public.servers.systemServices` is `$wt15->servers->systemServices($serverUuid)`), the services are
-`alarms`, `customMetrics`, `databases`, `domains`, `health`, `incidents`, `logSources`, `logs`, `metricSources`, `scans`,
-`serverProfiles`, `servers`, `services`, `tagGroups` and `tags`, and `me()` stays on the client.
+`alarmChannels`, `alarmPolicies`, `alarms`, `auditActions`, `customMetrics`, `databases`, `domains`, `health`, `incidents`,
+`logSources`, `logs`, `metricSources`, `organisation`, `scans`, `serverProfiles`, `servers`, `services`, `tagGroups` and `tags`,
+and `me()` stays on the client.
 
 ```php
 $wt15 = WatchTower15\Client::fromEnvironment();
@@ -561,6 +575,6 @@ contact@watchtower15.com with the subject "Security".
 
 ## What is not in this release
 
-The framework bridges for Symfony and CakePHP arrive in later releases. Everything under `Internal\` and every member marked `@internal` is outside semantic versioning.
+Everything under `Internal\` and every member marked `@internal` is outside semantic versioning.
 
 MIT licence.
