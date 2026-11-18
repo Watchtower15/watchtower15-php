@@ -7,12 +7,15 @@ declare(strict_types=1);
 namespace WatchTower15\Api\Generated\Services;
 
 use WatchTower15\Api\Generated\Models\DatabasesAcceptKey;
+use WatchTower15\Api\Generated\Models\DatabasesCapabilities;
+use WatchTower15\Api\Generated\Models\DatabasesCloud;
 use WatchTower15\Api\Generated\Models\DatabasesCollectorHistoryItem;
 use WatchTower15\Api\Generated\Models\DatabasesCollectorPreview;
 use WatchTower15\Api\Generated\Models\DatabasesCollectors;
 use WatchTower15\Api\Generated\Models\DatabasesCoverage;
 use WatchTower15\Api\Generated\Models\DatabasesCreate;
 use WatchTower15\Api\Generated\Models\DatabasesDismissFinding;
+use WatchTower15\Api\Generated\Models\DatabasesFailoversItem;
 use WatchTower15\Api\Generated\Models\DatabasesFindingsItem;
 use WatchTower15\Api\Generated\Models\DatabasesListItem;
 use WatchTower15\Api\Generated\Models\DatabasesMetrics;
@@ -49,6 +52,36 @@ class DatabasesService
     {
         $result = $this->operations->call('public.databases.acceptKey', ['database_uuid' => $databaseUuid], $params, $options);
         assert($result instanceof DatabasesAcceptKey);
+
+        return $result;
+    }
+
+    /**
+     * public.databases.capabilities — GET /databases/{database_uuid}/capabilities
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return DatabasesCapabilities
+     */
+    public function capabilities(string $databaseUuid, array $params = [], RequestOptions|array|null $options = null): DatabasesCapabilities
+    {
+        $result = $this->operations->call('public.databases.capabilities', ['database_uuid' => $databaseUuid], $params, $options);
+        assert($result instanceof DatabasesCapabilities);
+
+        return $result;
+    }
+
+    /**
+     * public.databases.cloud — GET /databases/{database_uuid}/cloud
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return DatabasesCloud
+     */
+    public function cloud(string $databaseUuid, array $params = [], RequestOptions|array|null $options = null): DatabasesCloud
+    {
+        $result = $this->operations->call('public.databases.cloud', ['database_uuid' => $databaseUuid], $params, $options);
+        assert($result instanceof DatabasesCloud);
 
         return $result;
     }
@@ -155,6 +188,21 @@ class DatabasesService
         assert($result instanceof DatabasesDismissFinding);
 
         return $result;
+    }
+
+    /**
+     * public.databases.failovers — GET /databases/{database_uuid}/failovers
+     *
+     * @param array{cursor?: string, from?: string, include_total?: bool, limit?: int<1, 100>, period?: string, to?: string} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return Page<DatabasesFailoversItem>
+     */
+    public function failovers(string $databaseUuid, array $params = [], RequestOptions|array|null $options = null): Page
+    {
+        /** @var Page<DatabasesFailoversItem> $page */
+        $page = $this->operations->page('public.databases.failovers', ['database_uuid' => $databaseUuid], $params, $options);
+
+        return $page;
     }
 
     /**

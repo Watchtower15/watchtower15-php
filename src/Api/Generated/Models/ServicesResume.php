@@ -12,9 +12,9 @@ use WatchTower15\Internal\Hydrate;
 final readonly class ServicesResume implements Hydratable
 {
     /**
-     * @param list<int> $expectedHttpStatuses
-     * @param list<ServicesResumeResponseAssertionsItem> $responseAssertions
+     * @param list<array<string, mixed>> $steps
      * @param list<ServicesResumeTagsItem> $tags
+     * @param list<array<string, mixed>> $variables
      * @param array<string, mixed> $raw The answer as the server sent it, unknown fields included.
      */
     public function __construct(
@@ -24,30 +24,20 @@ final readonly class ServicesResume implements Hydratable
         public string $collectorStatus,
         public ?string $collectorStatusReason,
         public string $consoleUrl,
-        public array $expectedHttpStatuses,
-        public bool $followRedirects,
         public string $healthStatus,
-        public string $host,
         public ?ServicesResumeLatestReachability $latestReachability,
         public ?ServicesResumeLatestResponse $latestResponse,
+        public int $liveVersion,
         public ?int $memberLimit,
         public string $name,
-        public ?string $path,
         public string $poolMode,
-        public int $port,
-        public string $protocol,
         public ?int $quorumN,
-        public ServicesResumeRequestAuth $requestAuth,
-        public ?string $requestMethod,
-        public array $responseAssertions,
-        public bool $responseMonitorEnabled,
-        public ?string $responseType,
-        public ?string $smtpTlsMode,
+        public ServicesResumeRun $run,
         public string $status,
+        public array $steps,
         public array $tags,
-        public int $timeoutSeconds,
-        public bool $tlsVerify,
         public string $uuid,
+        public array $variables,
         private array $raw = [],
     ) {
     }
@@ -64,30 +54,20 @@ final readonly class ServicesResume implements Hydratable
             collectorStatus: Hydrate::string($data['collector_status'] ?? null),
             collectorStatusReason: isset($data['collector_status_reason']) ? Hydrate::string($data['collector_status_reason']) : null,
             consoleUrl: Hydrate::string($data['console_url'] ?? null),
-            expectedHttpStatuses: Hydrate::list($data['expected_http_statuses'] ?? null, Hydrate::int(...)),
-            followRedirects: Hydrate::bool($data['follow_redirects'] ?? null),
             healthStatus: Hydrate::string($data['health_status'] ?? null),
-            host: Hydrate::string($data['host'] ?? null),
             latestReachability: isset($data['latest_reachability']) ? ServicesResumeLatestReachability::fromArray(Hydrate::array($data['latest_reachability'])) : null,
             latestResponse: isset($data['latest_response']) ? ServicesResumeLatestResponse::fromArray(Hydrate::array($data['latest_response'])) : null,
+            liveVersion: Hydrate::int($data['live_version'] ?? null),
             memberLimit: isset($data['member_limit']) ? Hydrate::int($data['member_limit']) : null,
             name: Hydrate::string($data['name'] ?? null),
-            path: isset($data['path']) ? Hydrate::string($data['path']) : null,
             poolMode: Hydrate::string($data['pool_mode'] ?? null),
-            port: Hydrate::int($data['port'] ?? null),
-            protocol: Hydrate::string($data['protocol'] ?? null),
             quorumN: isset($data['quorum_n']) ? Hydrate::int($data['quorum_n']) : null,
-            requestAuth: ServicesResumeRequestAuth::fromArray(Hydrate::array($data['request_auth'] ?? null)),
-            requestMethod: isset($data['request_method']) ? Hydrate::string($data['request_method']) : null,
-            responseAssertions: Hydrate::list($data['response_assertions'] ?? null, static fn (mixed $row): ServicesResumeResponseAssertionsItem => ServicesResumeResponseAssertionsItem::fromArray(Hydrate::array($row))),
-            responseMonitorEnabled: Hydrate::bool($data['response_monitor_enabled'] ?? null),
-            responseType: isset($data['response_type']) ? Hydrate::string($data['response_type']) : null,
-            smtpTlsMode: isset($data['smtp_tls_mode']) ? Hydrate::string($data['smtp_tls_mode']) : null,
+            run: ServicesResumeRun::fromArray(Hydrate::array($data['run'] ?? null)),
             status: Hydrate::string($data['status'] ?? null),
+            steps: Hydrate::list($data['steps'] ?? null, static fn (mixed $row): array => Hydrate::map($row, static fn (mixed $row): mixed => $row)),
             tags: Hydrate::list($data['tags'] ?? null, static fn (mixed $row): ServicesResumeTagsItem => ServicesResumeTagsItem::fromArray(Hydrate::array($row))),
-            timeoutSeconds: Hydrate::int($data['timeout_seconds'] ?? null),
-            tlsVerify: Hydrate::bool($data['tls_verify'] ?? null),
             uuid: Hydrate::string($data['uuid'] ?? null),
+            variables: Hydrate::list($data['variables'] ?? null, static fn (mixed $row): array => Hydrate::map($row, static fn (mixed $row): mixed => $row)),
             raw: $data,
         );
     }

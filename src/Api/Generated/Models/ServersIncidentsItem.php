@@ -12,6 +12,7 @@ use WatchTower15\Internal\Hydrate;
 final readonly class ServersIncidentsItem implements Hydratable
 {
     /**
+     * @param list<ServersIncidentsItemNotificationsItem> $notifications
      * @param array<string, mixed> $raw The answer as the server sent it, unknown fields included.
      */
     public function __construct(
@@ -21,6 +22,7 @@ final readonly class ServersIncidentsItem implements Hydratable
         public ServersIncidentsItemEntity $entity,
         public string $message,
         public mixed $metricName,
+        public array $notifications,
         public ?ServersIncidentsItemParentEntity $parentEntity,
         public ?\DateTimeImmutable $resolvedAt,
         public ?ServersIncidentsItemResolvedBy $resolvedBy,
@@ -48,6 +50,7 @@ final readonly class ServersIncidentsItem implements Hydratable
             entity: ServersIncidentsItemEntity::fromArray(Hydrate::array($data['entity'] ?? null)),
             message: Hydrate::string($data['message'] ?? null),
             metricName: $data['metric_name'] ?? null,
+            notifications: Hydrate::list($data['notifications'] ?? null, static fn (mixed $row): ServersIncidentsItemNotificationsItem => ServersIncidentsItemNotificationsItem::fromArray(Hydrate::array($row))),
             parentEntity: isset($data['parent_entity']) ? ServersIncidentsItemParentEntity::fromArray(Hydrate::array($data['parent_entity'])) : null,
             resolvedAt: isset($data['resolved_at']) ? Hydrate::instant($data['resolved_at']) : null,
             resolvedBy: isset($data['resolved_by']) ? ServersIncidentsItemResolvedBy::fromArray(Hydrate::array($data['resolved_by'])) : null,

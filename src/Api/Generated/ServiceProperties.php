@@ -9,6 +9,7 @@ namespace WatchTower15\Api\Generated;
 use WatchTower15\Api\Generated\Services\AlarmChannelsService;
 use WatchTower15\Api\Generated\Services\AlarmPoliciesService;
 use WatchTower15\Api\Generated\Services\AlarmsService;
+use WatchTower15\Api\Generated\Services\AuditActionsService;
 use WatchTower15\Api\Generated\Services\CustomMetricsService;
 use WatchTower15\Api\Generated\Services\DatabasesService;
 use WatchTower15\Api\Generated\Services\DomainsService;
@@ -17,6 +18,7 @@ use WatchTower15\Api\Generated\Services\IncidentsService;
 use WatchTower15\Api\Generated\Services\LogSourcesService;
 use WatchTower15\Api\Generated\Services\LogsService;
 use WatchTower15\Api\Generated\Services\MetricSourcesService;
+use WatchTower15\Api\Generated\Services\OrganisationService;
 use WatchTower15\Api\Generated\Services\ServerProfilesService;
 use WatchTower15\Api\Generated\Services\ServersService;
 use WatchTower15\Api\Generated\Services\ServicesService;
@@ -31,6 +33,7 @@ trait ServiceProperties
     public readonly AlarmChannelsService $alarmChannels;
     public readonly AlarmPoliciesService $alarmPolicies;
     public readonly AlarmsService $alarms;
+    public readonly AuditActionsService $auditActions;
     public readonly CustomMetricsService $customMetrics;
     public readonly DatabasesService $databases;
     public readonly DomainsService $domains;
@@ -39,6 +42,7 @@ trait ServiceProperties
     public readonly LogSourcesService $logSources;
     public readonly LogsService $logs;
     public readonly MetricSourcesService $metricSources;
+    public readonly OrganisationService $organisation;
     public readonly ScansService $scans;
     public readonly ServerProfilesService $serverProfiles;
     public readonly ServersService $servers;
@@ -51,6 +55,7 @@ trait ServiceProperties
         $this->alarmChannels = new AlarmChannelsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->alarmPolicies = new AlarmPoliciesService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->alarms = new AlarmsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
+        $this->auditActions = new AuditActionsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->customMetrics = new CustomMetricsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->databases = new DatabasesService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->domains = new DomainsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
@@ -59,6 +64,7 @@ trait ServiceProperties
         $this->logSources = new LogSourcesService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->logs = new LogsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->metricSources = new MetricSourcesService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
+        $this->organisation = new OrganisationService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->scans = new ScansService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->serverProfiles = new ServerProfilesService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->servers = new ServersService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor

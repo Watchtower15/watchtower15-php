@@ -9,6 +9,7 @@ namespace WatchTower15\Api\Generated\Enums;
 /** The known values; the API may add more, so a model keeps the raw string beside this. */
 enum Kind: string
 {
+    case Indicator = 'indicator';
     case Posture = 'posture';
     case Vulnerability = 'vulnerability';
 }

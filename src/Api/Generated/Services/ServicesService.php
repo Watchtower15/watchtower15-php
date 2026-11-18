@@ -9,6 +9,8 @@ namespace WatchTower15\Api\Generated\Services;
 use WatchTower15\Api\Generated\Models\ServicesCollectorPreview;
 use WatchTower15\Api\Generated\Models\ServicesCollectors;
 use WatchTower15\Api\Generated\Models\ServicesCreate;
+use WatchTower15\Api\Generated\Models\ServicesDuplicate;
+use WatchTower15\Api\Generated\Models\ServicesImport;
 use WatchTower15\Api\Generated\Models\ServicesListItem;
 use WatchTower15\Api\Generated\Models\ServicesPause;
 use WatchTower15\Api\Generated\Models\ServicesReassign;
@@ -20,6 +22,8 @@ use WatchTower15\Api\Generated\Models\ServicesTestRunsStartSaved;
 use WatchTower15\Api\Generated\Models\ServicesTestRunsView;
 use WatchTower15\Api\Generated\Models\ServicesUpdate;
 use WatchTower15\Api\Generated\Models\ServicesVerify;
+use WatchTower15\Api\Generated\Models\ServicesVersionsItem;
+use WatchTower15\Api\Generated\Models\ServicesVersionsView;
 use WatchTower15\Api\Generated\Models\ServicesView;
 use WatchTower15\Api\Operations;
 use WatchTower15\Api\Page;
@@ -64,7 +68,7 @@ class ServicesService
     /**
      * public.services.create — POST /services
      *
-     * @param array{active?: bool|null, check_interval_seconds?: int<60, 86400>|null, collectors: array{all?: list<non-empty-string>|null, any?: list<non-empty-string>|null, selection?: 'servers'|'tags', servers?: list<non-empty-string>|null}, expected_http_statuses?: list<int<100, 599>>|null, expected_response_contains?: string|null, follow_redirects?: bool|null, host: string, member_limit?: int<1, 200>|null, name: string, notes?: string|null, parameters?: list<string>|null, path?: string|null, pool_mode?: 'active_standby'|'all_members'|null, port: int<1, 65535>, protocol: 'http'|'https'|'smtp'|'tcp'|'udp', quorum_n?: int<1, 200>|null, request_auth?: array{password?: string|null, token?: string|null, type?: 'basic'|'bearer'|'none', username?: string|null}|null, request_body?: string|null, request_headers?: list<string>|null, request_method?: 'DELETE'|'GET'|'HEAD'|'PATCH'|'POST'|'PUT'|null, response_assertions?: list<array{comparison: 'contains'|'equals'|'exists'|'gt'|'gte'|'lt'|'lte'|'matches'|'not_contains'|'not_equals'|'not_exists', select?: string|null, value?: string|null}>|null, response_empty?: bool|null, response_monitor_enabled?: bool|null, response_type?: 'json'|'xml'|null, smtp_tls_mode?: 'implicit'|'none'|'starttls'|null, tag_uuids?: list<non-empty-string|null>|null, timeout_seconds?: int<5, 120>|null, tls_verify?: bool|null} $params
+     * @param array{active?: bool|null, check_interval_seconds?: int<60, 86400>|null, collectors: array{all?: list<non-empty-string>|null, any?: list<non-empty-string>|null, selection?: 'servers'|'tags', servers?: list<non-empty-string>|null}, member_limit?: int<1, 200>|null, name: string, notes?: string|null, parameters?: list<string>|null, pool_mode?: 'active_standby'|'all_members'|null, quorum_n?: int<1, 200>|null, run?: list<string>|null, steps: list<list<string>>, tag_uuids?: list<non-empty-string|null>|null, variables?: list<string>|null} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
      * @return ServicesCreate
      */
@@ -88,6 +92,36 @@ class ServicesService
         $this->operations->call('public.services.delete', ['service_uuid' => $serviceUuid], $params, $options);
 
         return null;
+    }
+
+    /**
+     * public.services.duplicate — POST /services/{service_uuid}/duplicate
+     *
+     * @param array{name?: string|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServicesDuplicate
+     */
+    public function duplicate(string $serviceUuid, array $params = [], RequestOptions|array|null $options = null): ServicesDuplicate
+    {
+        $result = $this->operations->call('public.services.duplicate', ['service_uuid' => $serviceUuid], $params, $options);
+        assert($result instanceof ServicesDuplicate);
+
+        return $result;
+    }
+
+    /**
+     * public.services.import — POST /services/import
+     *
+     * @param array{operation?: string|null, source: 'curl'|'openapi', source_text: string, url?: string} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServicesImport
+     */
+    public function import(array $params, RequestOptions|array|null $options = null): ServicesImport
+    {
+        $result = $this->operations->call('public.services.import', [], $params, $options);
+        assert($result instanceof ServicesImport);
+
+        return $result;
     }
 
     /**
@@ -215,7 +249,7 @@ class ServicesService
     /**
      * public.services.testRunsStartNew — POST /services/test-runs
      *
-     * @param array{active?: bool|null, check_interval_seconds?: int<60, 86400>|null, collectors: array{all?: list<non-empty-string>|null, any?: list<non-empty-string>|null, selection?: 'servers'|'tags', servers?: list<non-empty-string>|null}, expected_http_statuses?: list<int<100, 599>>|null, expected_response_contains?: string|null, follow_redirects?: bool|null, host: string, member_limit?: int<1, 200>|null, name: string, notes?: string|null, parameters?: list<string>|null, path?: string|null, pool_mode?: 'active_standby'|'all_members'|null, port: int<1, 65535>, protocol: 'http'|'https'|'smtp'|'tcp'|'udp', quorum_n?: int<1, 200>|null, request_auth?: array{password?: string|null, token?: string|null, type?: 'basic'|'bearer'|'none', username?: string|null}|null, request_body?: string|null, request_headers?: list<string>|null, request_method?: 'DELETE'|'GET'|'HEAD'|'PATCH'|'POST'|'PUT'|null, response_assertions?: list<array{comparison: 'contains'|'equals'|'exists'|'gt'|'gte'|'lt'|'lte'|'matches'|'not_contains'|'not_equals'|'not_exists', select?: string|null, value?: string|null}>|null, response_empty?: bool|null, response_monitor_enabled?: bool|null, response_type?: 'json'|'xml'|null, smtp_tls_mode?: 'implicit'|'none'|'starttls'|null, tag_uuids?: list<non-empty-string|null>|null, timeout_seconds?: int<5, 120>|null, tls_verify?: bool|null} $params
+     * @param array{active?: bool|null, check_interval_seconds?: int<60, 86400>|null, collectors: array{all?: list<non-empty-string>|null, any?: list<non-empty-string>|null, selection?: 'servers'|'tags', servers?: list<non-empty-string>|null}, member_limit?: int<1, 200>|null, name: string, notes?: string|null, parameters?: list<string>|null, pool_mode?: 'active_standby'|'all_members'|null, quorum_n?: int<1, 200>|null, run?: list<string>|null, steps: list<list<string>>, tag_uuids?: list<non-empty-string|null>|null, variables?: list<string>|null} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
      * @return ServicesTestRunsStartNew
      */
@@ -230,7 +264,7 @@ class ServicesService
     /**
      * public.services.testRunsStartSaved — POST /services/{service_uuid}/test-runs
      *
-     * @param array{active: bool, check_interval_seconds?: int<60, 86400>|null, collectors?: array{all?: list<non-empty-string>|null, any?: list<non-empty-string>|null, selection?: 'servers'|'tags', servers?: list<non-empty-string>|null}|null, expected_http_statuses?: list<int<100, 599>>|null, expected_response_contains?: string|null, follow_redirects?: bool|null, host: string, member_limit?: int<1, 200>|null, name: string, notes?: string|null, parameters?: list<string>|null, path?: string|null, pool_mode?: 'active_standby'|'all_members'|null, port: int<1, 65535>, protocol?: 'http'|'https'|'smtp'|'tcp'|'udp'|null, quorum_n?: int<1, 200>|null, request_auth?: array{password?: string|null, token?: string|null, type?: 'basic'|'bearer'|'none', username?: string|null}|null, request_body?: string|null, request_headers?: list<string>|null, request_method?: 'DELETE'|'GET'|'HEAD'|'PATCH'|'POST'|'PUT'|null, response_assertions?: list<array{comparison: 'contains'|'equals'|'exists'|'gt'|'gte'|'lt'|'lte'|'matches'|'not_contains'|'not_equals'|'not_exists', select?: string|null, value?: string|null}>|null, response_empty?: bool|null, response_monitor_enabled?: bool|null, response_type?: 'json'|'xml'|null, smtp_tls_mode?: 'implicit'|'none'|'starttls'|null, tag_uuids?: list<non-empty-string|null>|null, timeout_seconds?: int<5, 120>|null, tls_verify?: bool|null} $params
+     * @param array{active: bool, check_interval_seconds?: int<60, 86400>|null, collectors?: array{all?: list<non-empty-string>|null, any?: list<non-empty-string>|null, selection?: 'servers'|'tags', servers?: list<non-empty-string>|null}|null, member_limit?: int<1, 200>|null, name: string, notes?: string|null, parameters?: list<string>|null, pool_mode?: 'active_standby'|'all_members'|null, quorum_n?: int<1, 200>|null, run?: list<string>|null, steps: list<list<string>>, tag_uuids?: list<non-empty-string|null>|null, variables?: list<string>|null} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
      * @return ServicesTestRunsStartSaved
      */
@@ -260,7 +294,7 @@ class ServicesService
     /**
      * public.services.update — PUT /services/{service_uuid}
      *
-     * @param array{active: bool, check_interval_seconds?: int<60, 86400>|null, collectors?: array{all?: list<non-empty-string>|null, any?: list<non-empty-string>|null, selection?: 'servers'|'tags', servers?: list<non-empty-string>|null}|null, expected_http_statuses?: list<int<100, 599>>|null, expected_response_contains?: string|null, follow_redirects?: bool|null, host: string, member_limit?: int<1, 200>|null, name: string, notes?: string|null, parameters?: list<string>|null, path?: string|null, pool_mode?: 'active_standby'|'all_members'|null, port: int<1, 65535>, protocol?: 'http'|'https'|'smtp'|'tcp'|'udp'|null, quorum_n?: int<1, 200>|null, request_auth?: array{password?: string|null, token?: string|null, type?: 'basic'|'bearer'|'none', username?: string|null}|null, request_body?: string|null, request_headers?: list<string>|null, request_method?: 'DELETE'|'GET'|'HEAD'|'PATCH'|'POST'|'PUT'|null, response_assertions?: list<array{comparison: 'contains'|'equals'|'exists'|'gt'|'gte'|'lt'|'lte'|'matches'|'not_contains'|'not_equals'|'not_exists', select?: string|null, value?: string|null}>|null, response_empty?: bool|null, response_monitor_enabled?: bool|null, response_type?: 'json'|'xml'|null, smtp_tls_mode?: 'implicit'|'none'|'starttls'|null, tag_uuids?: list<non-empty-string|null>|null, timeout_seconds?: int<5, 120>|null, tls_verify?: bool|null} $params
+     * @param array{active: bool, check_interval_seconds?: int<60, 86400>|null, collectors?: array{all?: list<non-empty-string>|null, any?: list<non-empty-string>|null, selection?: 'servers'|'tags', servers?: list<non-empty-string>|null}|null, member_limit?: int<1, 200>|null, name: string, notes?: string|null, parameters?: list<string>|null, pool_mode?: 'active_standby'|'all_members'|null, quorum_n?: int<1, 200>|null, run?: list<string>|null, steps: list<list<string>>, tag_uuids?: list<non-empty-string|null>|null, variables?: list<string>|null} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
      * @return ServicesUpdate
      */
@@ -283,6 +317,36 @@ class ServicesService
     {
         $result = $this->operations->call('public.services.verify', ['service_uuid' => $serviceUuid], $params, $options);
         assert($result instanceof ServicesVerify);
+
+        return $result;
+    }
+
+    /**
+     * public.services.versions — GET /services/{service_uuid}/versions
+     *
+     * @param array{cursor?: string, include_total?: bool, limit?: int<1, 100>} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return Page<ServicesVersionsItem>
+     */
+    public function versions(string $serviceUuid, array $params = [], RequestOptions|array|null $options = null): Page
+    {
+        /** @var Page<ServicesVersionsItem> $page */
+        $page = $this->operations->page('public.services.versions', ['service_uuid' => $serviceUuid], $params, $options);
+
+        return $page;
+    }
+
+    /**
+     * public.services.versionsView — GET /services/{service_uuid}/versions/{version_uuid}
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return ServicesVersionsView
+     */
+    public function versionsView(string $serviceUuid, string $versionUuid, array $params = [], RequestOptions|array|null $options = null): ServicesVersionsView
+    {
+        $result = $this->operations->call('public.services.versionsView', ['service_uuid' => $serviceUuid, 'version_uuid' => $versionUuid], $params, $options);
+        assert($result instanceof ServicesVersionsView);
 
         return $result;
     }

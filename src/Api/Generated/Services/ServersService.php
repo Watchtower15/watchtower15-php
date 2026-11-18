@@ -363,7 +363,7 @@ class ServersService
     /**
      * public.servers.securityFindings — GET /servers/{server_uuid}/security-findings
      *
-     * @param array{cursor?: string, include_total?: bool, kind?: 'posture'|'vulnerability', limit?: int<1, 100>} $params
+     * @param array{cursor?: string, include_total?: bool, kev?: bool, kind?: 'indicator'|'posture'|'vulnerability', limit?: int<1, 100>, package?: string, severity?: list<'critical'|'info'|'warning'>, status?: list<'dismissed'|'fail'|'not_applicable'|'not_measured'|'open'|'pass'|'resolved'>, vulnerability_id?: string} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
      * @return Page<array<string, mixed>>
      */

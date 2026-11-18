@@ -19,6 +19,7 @@ final readonly class LogsFacets implements Hydratable
     public function __construct(
         public array $levels,
         public array $streams,
+        public LogsFacetsWindow $window,
         private array $raw = [],
     ) {
     }
@@ -31,6 +32,7 @@ final readonly class LogsFacets implements Hydratable
         return new static(
             levels: Hydrate::list($data['levels'] ?? null, static fn (mixed $row): LogsFacetsLevelsItem => LogsFacetsLevelsItem::fromArray(Hydrate::array($row))),
             streams: Hydrate::list($data['streams'] ?? null, static fn (mixed $row): LogsFacetsStreamsItem => LogsFacetsStreamsItem::fromArray(Hydrate::array($row))),
+            window: LogsFacetsWindow::fromArray(Hydrate::array($data['window'] ?? null)),
             raw: $data,
         );
     }

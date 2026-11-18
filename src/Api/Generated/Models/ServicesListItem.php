@@ -12,6 +12,7 @@ use WatchTower15\Internal\Hydrate;
 final readonly class ServicesListItem implements Hydratable
 {
     /**
+     * @param list<string> $stepTypes
      * @param array<string, mixed> $raw The answer as the server sent it, unknown fields included.
      */
     public function __construct(
@@ -21,16 +22,15 @@ final readonly class ServicesListItem implements Hydratable
         public ?string $collectorStatusReason,
         public string $consoleUrl,
         public string $healthStatus,
-        public string $host,
         public ?\DateTimeImmutable $latestCheckedAt,
         public ?int $latestResponseTimeMs,
         public int $memberCount,
         public string $name,
         public string $poolMode,
-        public int $port,
-        public string $protocol,
+        public int $runBudgetSeconds,
         public string $status,
-        public int $timeoutSeconds,
+        public int $stepCount,
+        public array $stepTypes,
         public string $uuid,
         private array $raw = [],
     ) {
@@ -48,16 +48,15 @@ final readonly class ServicesListItem implements Hydratable
             collectorStatusReason: isset($data['collector_status_reason']) ? Hydrate::string($data['collector_status_reason']) : null,
             consoleUrl: Hydrate::string($data['console_url'] ?? null),
             healthStatus: Hydrate::string($data['health_status'] ?? null),
-            host: Hydrate::string($data['host'] ?? null),
             latestCheckedAt: isset($data['latest_checked_at']) ? Hydrate::instant($data['latest_checked_at']) : null,
             latestResponseTimeMs: isset($data['latest_response_time_ms']) ? Hydrate::int($data['latest_response_time_ms']) : null,
             memberCount: Hydrate::int($data['member_count'] ?? null),
             name: Hydrate::string($data['name'] ?? null),
             poolMode: Hydrate::string($data['pool_mode'] ?? null),
-            port: Hydrate::int($data['port'] ?? null),
-            protocol: Hydrate::string($data['protocol'] ?? null),
+            runBudgetSeconds: Hydrate::int($data['run_budget_seconds'] ?? null),
             status: Hydrate::string($data['status'] ?? null),
-            timeoutSeconds: Hydrate::int($data['timeout_seconds'] ?? null),
+            stepCount: Hydrate::int($data['step_count'] ?? null),
+            stepTypes: Hydrate::list($data['step_types'] ?? null, Hydrate::string(...)),
             uuid: Hydrate::string($data['uuid'] ?? null),
             raw: $data,
         );

@@ -13,6 +13,7 @@ final readonly class ServersSecurityFinding implements Hydratable
 {
     /**
      * @param list<ServersSecurityFindingHistoryItem> $history
+     * @param array<string, mixed>|null $indicator
      * @param array<string, mixed>|null $posture
      * @param array<string, mixed>|null $vulnerability
      * @param array<string, mixed> $raw The answer as the server sent it, unknown fields included.
@@ -20,6 +21,7 @@ final readonly class ServersSecurityFinding implements Hydratable
     public function __construct(
         public ?ServersSecurityFindingDismissal $dismissal,
         public array $history,
+        public ?array $indicator,
         public string $kind,
         public ?array $posture,
         public string $severity,
@@ -39,6 +41,7 @@ final readonly class ServersSecurityFinding implements Hydratable
         return new static(
             dismissal: isset($data['dismissal']) ? ServersSecurityFindingDismissal::fromArray(Hydrate::array($data['dismissal'])) : null,
             history: Hydrate::list($data['history'] ?? null, static fn (mixed $row): ServersSecurityFindingHistoryItem => ServersSecurityFindingHistoryItem::fromArray(Hydrate::array($row))),
+            indicator: isset($data['indicator']) ? Hydrate::map($data['indicator'], static fn (mixed $row): mixed => $row) : null,
             kind: Hydrate::string($data['kind'] ?? null),
             posture: isset($data['posture']) ? Hydrate::map($data['posture'], static fn (mixed $row): mixed => $row) : null,
             severity: Hydrate::string($data['severity'] ?? null),
