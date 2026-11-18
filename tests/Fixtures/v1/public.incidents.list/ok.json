@@ -28,7 +28,14 @@
         "name": "x"
       },
       "resolved_by_system": true,
-      "console_url": "x"
+      "console_url": "x",
+      "notifications": [
+        {
+          "channel": "email",
+          "status": "sent",
+          "sent_at": 1798761602000
+        }
+      ]
     }
   ],
   "next_cursor": null,
