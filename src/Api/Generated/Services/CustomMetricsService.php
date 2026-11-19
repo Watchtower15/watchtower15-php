@@ -10,7 +10,9 @@ use WatchTower15\Api\Generated\Models\CustomMetricsApprove;
 use WatchTower15\Api\Generated\Models\CustomMetricsCreate;
 use WatchTower15\Api\Generated\Models\CustomMetricsListItem;
 use WatchTower15\Api\Generated\Models\CustomMetricsResetSeries;
+use WatchTower15\Api\Generated\Models\CustomMetricsSamples;
 use WatchTower15\Api\Generated\Models\CustomMetricsSeries;
+use WatchTower15\Api\Generated\Models\CustomMetricsSummary;
 use WatchTower15\Api\Generated\Models\CustomMetricsUpdate;
 use WatchTower15\Api\Generated\Models\CustomMetricsView;
 use WatchTower15\Api\Operations;
@@ -112,9 +114,24 @@ class CustomMetricsService
     }
 
     /**
+     * public.customMetrics.samples — GET /custom-metrics/{custom_metric_uuid}/samples
+     *
+     * @param array{cursor?: string, from?: string, limit?: int<1, 10000>, period?: string, to?: string} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return CustomMetricsSamples
+     */
+    public function samples(string $customMetricUuid, array $params = [], RequestOptions|array|null $options = null): CustomMetricsSamples
+    {
+        $result = $this->operations->call('public.customMetrics.samples', ['custom_metric_uuid' => $customMetricUuid], $params, $options);
+        assert($result instanceof CustomMetricsSamples);
+
+        return $result;
+    }
+
+    /**
      * public.customMetrics.series — GET /custom-metrics/{custom_metric_uuid}/series
      *
-     * @param array{from?: string, period?: string, to?: string} $params
+     * @param array{aggregation?: 'avg'|'last'|'max'|'min'|'sum', from?: string, period?: string, step?: '1d'|'1m'|'1w'|'2h'|'30m'|'30s'|'5m'|'6h', to?: string} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
      * @return CustomMetricsSeries
      */
@@ -122,6 +139,21 @@ class CustomMetricsService
     {
         $result = $this->operations->call('public.customMetrics.series', ['custom_metric_uuid' => $customMetricUuid], $params, $options);
         assert($result instanceof CustomMetricsSeries);
+
+        return $result;
+    }
+
+    /**
+     * public.customMetrics.summary — GET /custom-metrics/{custom_metric_uuid}/summary
+     *
+     * @param array{from?: string, period?: string, to?: string} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return CustomMetricsSummary
+     */
+    public function summary(string $customMetricUuid, array $params = [], RequestOptions|array|null $options = null): CustomMetricsSummary
+    {
+        $result = $this->operations->call('public.customMetrics.summary', ['custom_metric_uuid' => $customMetricUuid], $params, $options);
+        assert($result instanceof CustomMetricsSummary);
 
         return $result;
     }

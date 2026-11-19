@@ -17,6 +17,7 @@ final readonly class CustomMetricsListItem implements Hydratable
      */
     public function __construct(
         public bool $active,
+        public int $alarmsCount,
         public ?\DateTimeImmutable $approvedAt,
         public bool $autoCreated,
         public string $consoleUrl,
@@ -40,6 +41,7 @@ final readonly class CustomMetricsListItem implements Hydratable
     {
         return new static(
             active: Hydrate::bool($data['active'] ?? null),
+            alarmsCount: Hydrate::int($data['alarms_count'] ?? null),
             approvedAt: isset($data['approved_at']) ? Hydrate::instant($data['approved_at']) : null,
             autoCreated: Hydrate::bool($data['auto_created'] ?? null),
             consoleUrl: Hydrate::string($data['console_url'] ?? null),

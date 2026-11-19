@@ -16,6 +16,7 @@ final readonly class CustomMetricsSeries implements Hydratable
      * @param array<string, mixed> $raw The answer as the server sent it, unknown fields included.
      */
     public function __construct(
+        public ?string $aggregation,
         public bool $available,
         public CustomMetricsSeriesMetric $metric,
         public ?string $reason,
@@ -33,6 +34,7 @@ final readonly class CustomMetricsSeries implements Hydratable
     public static function fromArray(array $data): static
     {
         return new static(
+            aggregation: isset($data['aggregation']) ? Hydrate::string($data['aggregation']) : null,
             available: Hydrate::bool($data['available'] ?? null),
             metric: CustomMetricsSeriesMetric::fromArray(Hydrate::array($data['metric'] ?? null)),
             reason: isset($data['reason']) ? Hydrate::string($data['reason']) : null,

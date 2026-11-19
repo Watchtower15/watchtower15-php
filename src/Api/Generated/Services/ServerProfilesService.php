@@ -10,6 +10,7 @@ use WatchTower15\Api\Generated\Models\ServerProfilesCreate;
 use WatchTower15\Api\Generated\Models\ServerProfilesDuplicate;
 use WatchTower15\Api\Generated\Models\ServerProfilesListItem;
 use WatchTower15\Api\Generated\Models\ServerProfilesUpdate;
+use WatchTower15\Api\Generated\Models\ServerProfilesUpdateIndicatorPolicy;
 use WatchTower15\Api\Generated\Models\ServerProfilesView;
 use WatchTower15\Api\Operations;
 use WatchTower15\Api\Page;
@@ -19,6 +20,21 @@ class ServerProfilesService
 {
     public function __construct(protected readonly Operations $operations)
     {
+    }
+
+    /**
+     * public.serverProfiles.clearIndicatorPolicy — DELETE /server-profiles/{server_profile_uuid}/indicator-policies/{indicator}
+     *
+     * @param 'exe_world_writable'|'tmp_executable' $indicator
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return null
+     */
+    public function clearIndicatorPolicy(string $serverProfileUuid, string $indicator, array $params = [], RequestOptions|array|null $options = null): null
+    {
+        $this->operations->call('public.serverProfiles.clearIndicatorPolicy', ['server_profile_uuid' => $serverProfileUuid, 'indicator' => $indicator], $params, $options);
+
+        return null;
     }
 
     /**
@@ -66,6 +82,22 @@ class ServerProfilesService
     }
 
     /**
+     * public.serverProfiles.indicatorPolicies — GET /server-profiles/{server_profile_uuid}/indicator-policies
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return array<string, mixed>
+     */
+    public function indicatorPolicies(string $serverProfileUuid, array $params = [], RequestOptions|array|null $options = null): array
+    {
+        $result = $this->operations->call('public.serverProfiles.indicatorPolicies', ['server_profile_uuid' => $serverProfileUuid], $params, $options);
+        assert(is_array($result));
+
+        /** @var array<string, mixed> $result */
+        return $result;
+    }
+
+    /**
      * public.serverProfiles.list — GET /server-profiles
      *
      * @param array{cursor?: string, include_total?: bool, limit?: int<1, 100>} $params
@@ -91,6 +123,22 @@ class ServerProfilesService
     {
         $result = $this->operations->call('public.serverProfiles.update', ['server_profile_uuid' => $serverProfileUuid], $params, $options);
         assert($result instanceof ServerProfilesUpdate);
+
+        return $result;
+    }
+
+    /**
+     * public.serverProfiles.updateIndicatorPolicy — PUT /server-profiles/{server_profile_uuid}/indicator-policies/{indicator}
+     *
+     * @param 'exe_world_writable'|'tmp_executable' $indicator
+     * @param array{known_folders?: list<string>|null, reason: string, review_on: string, severity?: 'critical'|'info'|'warning'|null, state: 'off'|'on'} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServerProfilesUpdateIndicatorPolicy
+     */
+    public function updateIndicatorPolicy(string $serverProfileUuid, string $indicator, array $params, RequestOptions|array|null $options = null): ServerProfilesUpdateIndicatorPolicy
+    {
+        $result = $this->operations->call('public.serverProfiles.updateIndicatorPolicy', ['server_profile_uuid' => $serverProfileUuid, 'indicator' => $indicator], $params, $options);
+        assert($result instanceof ServerProfilesUpdateIndicatorPolicy);
 
         return $result;
     }

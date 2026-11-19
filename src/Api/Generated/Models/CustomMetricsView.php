@@ -21,6 +21,7 @@ final readonly class CustomMetricsView implements Hydratable
      */
     public function __construct(
         public bool $active,
+        public int $alarmsCount,
         public ?\DateTimeImmutable $approvedAt,
         public bool $autoCreated,
         public int $backfillTierDays,
@@ -56,6 +57,7 @@ final readonly class CustomMetricsView implements Hydratable
     {
         return new static(
             active: Hydrate::bool($data['active'] ?? null),
+            alarmsCount: Hydrate::int($data['alarms_count'] ?? null),
             approvedAt: isset($data['approved_at']) ? Hydrate::instant($data['approved_at']) : null,
             autoCreated: Hydrate::bool($data['auto_created'] ?? null),
             backfillTierDays: Hydrate::int($data['backfill_tier_days'] ?? null),

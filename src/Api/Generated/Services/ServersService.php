@@ -8,6 +8,7 @@ namespace WatchTower15\Api\Generated\Services;
 
 use WatchTower15\Api\Generated\Models\ServersApprove;
 use WatchTower15\Api\Generated\Models\ServersArchive;
+use WatchTower15\Api\Generated\Models\ServersDiskReport;
 use WatchTower15\Api\Generated\Models\ServersDismissSecurityFinding;
 use WatchTower15\Api\Generated\Models\ServersForgetPort;
 use WatchTower15\Api\Generated\Models\ServersIncidentsItem;
@@ -32,6 +33,7 @@ use WatchTower15\Api\Generated\Models\ServersSecurityFinding;
 use WatchTower15\Api\Generated\Models\ServersSystemServicesItem;
 use WatchTower15\Api\Generated\Models\ServersSystemServicesMeta;
 use WatchTower15\Api\Generated\Models\ServersUpdate;
+use WatchTower15\Api\Generated\Models\ServersUpdateIndicatorPolicy;
 use WatchTower15\Api\Generated\Models\ServersUpdatePort;
 use WatchTower15\Api\Generated\Models\ServersUpdateVolume;
 use WatchTower15\Api\Generated\Models\ServersView;
@@ -77,6 +79,21 @@ class ServersService
     }
 
     /**
+     * public.servers.clearIndicatorPolicy — DELETE /servers/{server_uuid}/indicator-policies/{indicator}
+     *
+     * @param 'exe_world_writable'|'tmp_executable' $indicator
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return null
+     */
+    public function clearIndicatorPolicy(string $serverUuid, string $indicator, array $params = [], RequestOptions|array|null $options = null): null
+    {
+        $this->operations->call('public.servers.clearIndicatorPolicy', ['server_uuid' => $serverUuid, 'indicator' => $indicator], $params, $options);
+
+        return null;
+    }
+
+    /**
      * public.servers.delete — DELETE /servers/{server_uuid}
      *
      * @param array{} $params
@@ -88,6 +105,21 @@ class ServersService
         $this->operations->call('public.servers.delete', ['server_uuid' => $serverUuid], $params, $options);
 
         return null;
+    }
+
+    /**
+     * public.servers.diskReport — GET /servers/{server_uuid}/volumes/{volume_uuid}/disk-report
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return ServersDiskReport
+     */
+    public function diskReport(string $serverUuid, string $volumeUuid, array $params = [], RequestOptions|array|null $options = null): ServersDiskReport
+    {
+        $result = $this->operations->call('public.servers.diskReport', ['server_uuid' => $serverUuid, 'volume_uuid' => $volumeUuid], $params, $options);
+        assert($result instanceof ServersDiskReport);
+
+        return $result;
     }
 
     /**
@@ -133,6 +165,22 @@ class ServersService
         $page = $this->operations->page('public.servers.incidents', ['server_uuid' => $serverUuid], $params, $options);
 
         return $page;
+    }
+
+    /**
+     * public.servers.indicatorPolicies — GET /servers/{server_uuid}/indicator-policies
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return array<string, mixed>
+     */
+    public function indicatorPolicies(string $serverUuid, array $params = [], RequestOptions|array|null $options = null): array
+    {
+        $result = $this->operations->call('public.servers.indicatorPolicies', ['server_uuid' => $serverUuid], $params, $options);
+        assert(is_array($result));
+
+        /** @var array<string, mixed> $result */
+        return $result;
     }
 
     /**
@@ -401,6 +449,22 @@ class ServersService
     {
         $result = $this->operations->call('public.servers.update', ['server_uuid' => $serverUuid], $params, $options);
         assert($result instanceof ServersUpdate);
+
+        return $result;
+    }
+
+    /**
+     * public.servers.updateIndicatorPolicy — PUT /servers/{server_uuid}/indicator-policies/{indicator}
+     *
+     * @param 'exe_world_writable'|'tmp_executable' $indicator
+     * @param array{known_folders?: list<string>|null, reason: string, review_on: string, severity?: 'critical'|'info'|'warning'|null, state?: 'off'|'on'|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServersUpdateIndicatorPolicy
+     */
+    public function updateIndicatorPolicy(string $serverUuid, string $indicator, array $params, RequestOptions|array|null $options = null): ServersUpdateIndicatorPolicy
+    {
+        $result = $this->operations->call('public.servers.updateIndicatorPolicy', ['server_uuid' => $serverUuid, 'indicator' => $indicator], $params, $options);
+        assert($result instanceof ServersUpdateIndicatorPolicy);
 
         return $result;
     }

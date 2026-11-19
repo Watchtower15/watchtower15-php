@@ -11,6 +11,10 @@ use WatchTower15\Api\Generated\Models\MetricSourcesListItem;
 use WatchTower15\Api\Generated\Models\MetricSourcesPreviewTagChanges;
 use WatchTower15\Api\Generated\Models\MetricSourcesRevokeToken;
 use WatchTower15\Api\Generated\Models\MetricSourcesRotateToken;
+use WatchTower15\Api\Generated\Models\MetricSourcesSeriesItem;
+use WatchTower15\Api\Generated\Models\MetricSourcesSeriesMeta;
+use WatchTower15\Api\Generated\Models\MetricSourcesSummaryItem;
+use WatchTower15\Api\Generated\Models\MetricSourcesSummaryMeta;
 use WatchTower15\Api\Generated\Models\MetricSourcesUpdate;
 use WatchTower15\Api\Generated\Models\MetricSourcesView;
 use WatchTower15\Api\Operations;
@@ -110,6 +114,36 @@ class MetricSourcesService
         assert($result instanceof MetricSourcesRotateToken);
 
         return $result;
+    }
+
+    /**
+     * public.metricSources.series — GET /metric-sources/{metric_source_uuid}/series
+     *
+     * @param array{aggregation?: 'avg'|'last'|'max'|'min', cursor?: string, from?: string, limit?: int<1, 25>, period?: string, step?: '1d'|'1m'|'1w'|'2h'|'30m'|'30s'|'5m'|'6h', to?: string} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return Page<MetricSourcesSeriesItem>
+     */
+    public function series(string $metricSourceUuid, array $params = [], RequestOptions|array|null $options = null): Page
+    {
+        /** @var Page<MetricSourcesSeriesItem> $page */
+        $page = $this->operations->page('public.metricSources.series', ['metric_source_uuid' => $metricSourceUuid], $params, $options);
+
+        return $page;
+    }
+
+    /**
+     * public.metricSources.summary — GET /metric-sources/{metric_source_uuid}/summary
+     *
+     * @param array{cursor?: string, from?: string, limit?: int<1, 25>, period?: string, to?: string} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return Page<MetricSourcesSummaryItem>
+     */
+    public function summary(string $metricSourceUuid, array $params = [], RequestOptions|array|null $options = null): Page
+    {
+        /** @var Page<MetricSourcesSummaryItem> $page */
+        $page = $this->operations->page('public.metricSources.summary', ['metric_source_uuid' => $metricSourceUuid], $params, $options);
+
+        return $page;
     }
 
     /**
