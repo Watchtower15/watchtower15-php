@@ -20,7 +20,7 @@ class AuditCategoriesService
     /**
      * public.auditCategories.list — GET /audit-categories
      *
-     * @param array{} $params
+     * @param array{cursor?: string, include_total?: bool, limit?: int<1, 100>} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
      * @return Page<AuditCategoriesListItem>
      */
