@@ -6,10 +6,16 @@ declare(strict_types=1);
 
 namespace WatchTower15\Api\Generated\Services;
 
+use WatchTower15\Api\Generated\Models\ServerProfilesAlarmTemplatesItem;
+use WatchTower15\Api\Generated\Models\ServerProfilesAlarmTemplatesMeta;
 use WatchTower15\Api\Generated\Models\ServerProfilesCreate;
+use WatchTower15\Api\Generated\Models\ServerProfilesCreateAlarmTemplate;
 use WatchTower15\Api\Generated\Models\ServerProfilesDuplicate;
 use WatchTower15\Api\Generated\Models\ServerProfilesListItem;
+use WatchTower15\Api\Generated\Models\ServerProfilesPreviewAlarmTemplatePropagation;
+use WatchTower15\Api\Generated\Models\ServerProfilesPropagateAlarmTemplates;
 use WatchTower15\Api\Generated\Models\ServerProfilesUpdate;
+use WatchTower15\Api\Generated\Models\ServerProfilesUpdateAlarmTemplate;
 use WatchTower15\Api\Generated\Models\ServerProfilesUpdateIndicatorPolicy;
 use WatchTower15\Api\Generated\Models\ServerProfilesView;
 use WatchTower15\Api\Operations;
@@ -20,6 +26,21 @@ class ServerProfilesService
 {
     public function __construct(protected readonly Operations $operations)
     {
+    }
+
+    /**
+     * public.serverProfiles.alarmTemplates — GET /server-profiles/{server_profile_uuid}/alarm-templates
+     *
+     * @param array{cursor?: string, include_total?: bool, limit?: int<1, 100>} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return Page<ServerProfilesAlarmTemplatesItem>
+     */
+    public function alarmTemplates(string $serverProfileUuid, array $params = [], RequestOptions|array|null $options = null): Page
+    {
+        /** @var Page<ServerProfilesAlarmTemplatesItem> $page */
+        $page = $this->operations->page('public.serverProfiles.alarmTemplates', ['server_profile_uuid' => $serverProfileUuid], $params, $options);
+
+        return $page;
     }
 
     /**
@@ -40,7 +61,7 @@ class ServerProfilesService
     /**
      * public.serverProfiles.create — POST /server-profiles
      *
-     * @param array{description?: string|null, interval_sysinfo?: string, interval_telemetry?: string, limit_process_series?: string, log_files?: list<array{path?: string|null, source_type?: 'file'|'journald'}>|null, log_folders?: list<array{extensions?: list<string>|null, match_mode?: 'all'|'regex'|null, path?: string, pattern?: string|null}>|null, logging_disabled?: bool|null, name: string, server_led_tag_filter_mode?: 'exclude'|'include'|null, server_led_tag_group_uuids?: list<non-empty-string>|null, server_led_tagging?: bool|null, spool_database_cap_mb?: string, spool_horizon_hours?: string, spool_logs_cap_mb?: string, spool_metrics_cap_mb?: string, spool_min_free_disk_mb?: string, spool_min_free_disk_percent?: string, tag_uuids?: list<non-empty-string|null>|null, telemetry_capture_all?: bool|null, telemetry_disabled?: bool|null, telemetry_options?: list<'cpu'|'disk'|'disk_io'|'load'|'memory'|'network'|'processes'|'swap'|'systemd'>|null} $params
+     * @param array{description?: string|null, interval_sysinfo?: string, interval_telemetry?: string, limit_process_series?: string, log_files?: list<array{format?: 'nginx_combined'|'wt15_relay'|'wt15_timed'|null, path?: string|null, source_type?: 'file'|'journald'}>|null, log_folders?: list<array{extensions?: list<string>|null, match_mode?: 'all'|'regex'|null, path?: string, pattern?: string|null}>|null, logging_disabled?: bool|null, name: string, server_led_tag_filter_mode?: 'exclude'|'include'|null, server_led_tag_group_uuids?: list<non-empty-string>|null, server_led_tagging?: bool|null, spool_database_cap_mb?: string, spool_horizon_hours?: string, spool_logs_cap_mb?: string, spool_metrics_cap_mb?: string, spool_min_free_disk_mb?: string, spool_min_free_disk_percent?: string, tag_uuids?: list<non-empty-string|null>|null, telemetry_capture_all?: bool|null, telemetry_disabled?: bool|null, telemetry_options?: list<'cpu'|'disk'|'disk_io'|'load'|'memory'|'network'|'processes'|'swap'|'systemd'>|null} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
      * @return ServerProfilesCreate
      */
@@ -48,6 +69,21 @@ class ServerProfilesService
     {
         $result = $this->operations->call('public.serverProfiles.create', [], $params, $options);
         assert($result instanceof ServerProfilesCreate);
+
+        return $result;
+    }
+
+    /**
+     * public.serverProfiles.createAlarmTemplate — POST /server-profiles/{server_profile_uuid}/alarm-templates
+     *
+     * @param array{active?: bool, aggregation?: 'avg'|'count'|'last'|'max'|'min'|'sum'|null, alarm_policy_uuids?: list<non-empty-string>, comparison_operator?: 'eq'|'gt'|'gte'|'lt'|'lte'|null, critical_consecutive_failures_count?: int<1, 100>|null, critical_threshold?: float|int|null, critical_window_minutes?: int<1, 43200>|null, name?: string|null, notify_on_acknowledge?: bool|null, notify_on_resolve?: bool|null, rule_slug: string, warning_consecutive_failures_count?: int<1, 100>|null, warning_threshold?: float|int|null, warning_window_minutes?: int<1, 43200>|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServerProfilesCreateAlarmTemplate
+     */
+    public function createAlarmTemplate(string $serverProfileUuid, array $params, RequestOptions|array|null $options = null): ServerProfilesCreateAlarmTemplate
+    {
+        $result = $this->operations->call('public.serverProfiles.createAlarmTemplate', ['server_profile_uuid' => $serverProfileUuid], $params, $options);
+        assert($result instanceof ServerProfilesCreateAlarmTemplate);
 
         return $result;
     }
@@ -62,6 +98,20 @@ class ServerProfilesService
     public function delete(string $serverProfileUuid, array $params = [], RequestOptions|array|null $options = null): null
     {
         $this->operations->call('public.serverProfiles.delete', ['server_profile_uuid' => $serverProfileUuid], $params, $options);
+
+        return null;
+    }
+
+    /**
+     * public.serverProfiles.deleteAlarmTemplate — DELETE /server-profiles/{server_profile_uuid}/alarm-templates/{template_uuid}
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return null
+     */
+    public function deleteAlarmTemplate(string $serverProfileUuid, string $templateUuid, array $params = [], RequestOptions|array|null $options = null): null
+    {
+        $this->operations->call('public.serverProfiles.deleteAlarmTemplate', ['server_profile_uuid' => $serverProfileUuid, 'template_uuid' => $templateUuid], $params, $options);
 
         return null;
     }
@@ -113,9 +163,39 @@ class ServerProfilesService
     }
 
     /**
+     * public.serverProfiles.previewAlarmTemplatePropagation — POST /server-profiles/{server_profile_uuid}/alarm-templates/preview-propagation
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServerProfilesPreviewAlarmTemplatePropagation
+     */
+    public function previewAlarmTemplatePropagation(string $serverProfileUuid, array $params = [], RequestOptions|array|null $options = null): ServerProfilesPreviewAlarmTemplatePropagation
+    {
+        $result = $this->operations->call('public.serverProfiles.previewAlarmTemplatePropagation', ['server_profile_uuid' => $serverProfileUuid], $params, $options);
+        assert($result instanceof ServerProfilesPreviewAlarmTemplatePropagation);
+
+        return $result;
+    }
+
+    /**
+     * public.serverProfiles.propagateAlarmTemplates — POST /server-profiles/{server_profile_uuid}/alarm-templates/propagate
+     *
+     * @param array{apply_to_all?: bool|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServerProfilesPropagateAlarmTemplates
+     */
+    public function propagateAlarmTemplates(string $serverProfileUuid, array $params = [], RequestOptions|array|null $options = null): ServerProfilesPropagateAlarmTemplates
+    {
+        $result = $this->operations->call('public.serverProfiles.propagateAlarmTemplates', ['server_profile_uuid' => $serverProfileUuid], $params, $options);
+        assert($result instanceof ServerProfilesPropagateAlarmTemplates);
+
+        return $result;
+    }
+
+    /**
      * public.serverProfiles.update — PUT /server-profiles/{server_profile_uuid}
      *
-     * @param array{description?: string|null, interval_sysinfo?: string, interval_telemetry?: string, limit_process_series?: string, log_files?: list<array{path?: string|null, source_type?: 'file'|'journald'}>|null, log_folders?: list<array{extensions?: list<string>|null, match_mode?: 'all'|'regex'|null, path?: string, pattern?: string|null}>|null, logging_disabled?: bool|null, name: string, profile_type?: 'custom'|'default'|null, server_led_tag_filter_mode?: 'exclude'|'include'|null, server_led_tag_group_uuids?: list<non-empty-string>|null, server_led_tagging?: bool|null, spool_database_cap_mb?: string, spool_horizon_hours?: string, spool_logs_cap_mb?: string, spool_metrics_cap_mb?: string, spool_min_free_disk_mb?: string, spool_min_free_disk_percent?: string, sync_tags?: bool|null, sync_tags_mode?: 'additive'|'exclusive'|null, tag_uuids?: list<non-empty-string|null>|null, telemetry_capture_all?: bool|null, telemetry_disabled?: bool|null, telemetry_options?: list<'cpu'|'disk'|'disk_io'|'load'|'memory'|'network'|'processes'|'swap'|'systemd'>|null} $params
+     * @param array{description?: string|null, interval_sysinfo?: string, interval_telemetry?: string, limit_process_series?: string, log_files?: list<array{format?: 'nginx_combined'|'wt15_relay'|'wt15_timed'|null, path?: string|null, source_type?: 'file'|'journald'}>|null, log_folders?: list<array{extensions?: list<string>|null, match_mode?: 'all'|'regex'|null, path?: string, pattern?: string|null}>|null, logging_disabled?: bool|null, name: string, profile_type?: 'custom'|'default'|null, server_led_tag_filter_mode?: 'exclude'|'include'|null, server_led_tag_group_uuids?: list<non-empty-string>|null, server_led_tagging?: bool|null, spool_database_cap_mb?: string, spool_horizon_hours?: string, spool_logs_cap_mb?: string, spool_metrics_cap_mb?: string, spool_min_free_disk_mb?: string, spool_min_free_disk_percent?: string, sync_tags?: bool|null, sync_tags_mode?: 'additive'|'exclusive'|null, tag_uuids?: list<non-empty-string|null>|null, telemetry_capture_all?: bool|null, telemetry_disabled?: bool|null, telemetry_options?: list<'cpu'|'disk'|'disk_io'|'load'|'memory'|'network'|'processes'|'swap'|'systemd'>|null} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
      * @return ServerProfilesUpdate
      */
@@ -123,6 +203,21 @@ class ServerProfilesService
     {
         $result = $this->operations->call('public.serverProfiles.update', ['server_profile_uuid' => $serverProfileUuid], $params, $options);
         assert($result instanceof ServerProfilesUpdate);
+
+        return $result;
+    }
+
+    /**
+     * public.serverProfiles.updateAlarmTemplate — PUT /server-profiles/{server_profile_uuid}/alarm-templates/{template_uuid}
+     *
+     * @param array{active?: bool, aggregation?: 'avg'|'count'|'last'|'max'|'min'|'sum'|null, alarm_policy_uuids?: list<non-empty-string>, comparison_operator?: 'eq'|'gt'|'gte'|'lt'|'lte'|null, critical_consecutive_failures_count?: int<1, 100>|null, critical_threshold?: float|int|null, critical_window_minutes?: int<1, 43200>|null, name?: string|null, notify_on_acknowledge?: bool|null, notify_on_resolve?: bool|null, warning_consecutive_failures_count?: int<1, 100>|null, warning_threshold?: float|int|null, warning_window_minutes?: int<1, 43200>|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return ServerProfilesUpdateAlarmTemplate
+     */
+    public function updateAlarmTemplate(string $serverProfileUuid, string $templateUuid, array $params = [], RequestOptions|array|null $options = null): ServerProfilesUpdateAlarmTemplate
+    {
+        $result = $this->operations->call('public.serverProfiles.updateAlarmTemplate', ['server_profile_uuid' => $serverProfileUuid, 'template_uuid' => $templateUuid], $params, $options);
+        assert($result instanceof ServerProfilesUpdateAlarmTemplate);
 
         return $result;
     }

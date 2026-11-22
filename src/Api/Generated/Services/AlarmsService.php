@@ -6,8 +6,11 @@ declare(strict_types=1);
 
 namespace WatchTower15\Api\Generated\Services;
 
+use WatchTower15\Api\Generated\Models\AlarmsCreate;
 use WatchTower15\Api\Generated\Models\AlarmsListItem;
 use WatchTower15\Api\Generated\Models\AlarmsListMeta;
+use WatchTower15\Api\Generated\Models\AlarmsUpdate;
+use WatchTower15\Api\Generated\Models\AlarmsView;
 use WatchTower15\Api\Operations;
 use WatchTower15\Api\Page;
 use WatchTower15\Http\RequestOptions;
@@ -16,6 +19,35 @@ class AlarmsService
 {
     public function __construct(protected readonly Operations $operations)
     {
+    }
+
+    /**
+     * public.alarms.create — POST /alarms
+     *
+     * @param array{active?: bool, aggregation?: 'avg'|'count'|'last'|'max'|'min'|'sum'|null, alarm_policy_uuids?: list<non-empty-string>, comparison_operator?: 'eq'|'gt'|'gte'|'lt'|'lte'|null, critical_consecutive_failures_count?: int<1, 100>|null, critical_threshold?: float|int|null, critical_window_minutes?: int<1, 43200>|null, entity_type: 'custom_metric'|'database_instance'|'domain'|'log_source'|'server'|'server_port'|'server_system_service'|'server_volume'|'service', entity_uuid: non-empty-string, name?: string|null, notify_on_acknowledge?: bool|null, notify_on_resolve?: bool|null, rule_slug: string, warning_consecutive_failures_count?: int<1, 100>|null, warning_threshold?: float|int|null, warning_window_minutes?: int<1, 43200>|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return AlarmsCreate
+     */
+    public function create(array $params, RequestOptions|array|null $options = null): AlarmsCreate
+    {
+        $result = $this->operations->call('public.alarms.create', [], $params, $options);
+        assert($result instanceof AlarmsCreate);
+
+        return $result;
+    }
+
+    /**
+     * public.alarms.delete — DELETE /alarms/{alarm_uuid}
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return null
+     */
+    public function delete(string $alarmUuid, array $params = [], RequestOptions|array|null $options = null): null
+    {
+        $this->operations->call('public.alarms.delete', ['alarm_uuid' => $alarmUuid], $params, $options);
+
+        return null;
     }
 
     /**
@@ -31,5 +63,35 @@ class AlarmsService
         $page = $this->operations->page('public.alarms.list', [], $params, $options);
 
         return $page;
+    }
+
+    /**
+     * public.alarms.update — PUT /alarms/{alarm_uuid}
+     *
+     * @param array{active?: bool, aggregation?: 'avg'|'count'|'last'|'max'|'min'|'sum'|null, alarm_policy_uuids?: list<non-empty-string>, comparison_operator?: 'eq'|'gt'|'gte'|'lt'|'lte'|null, critical_consecutive_failures_count?: int<1, 100>|null, critical_threshold?: float|int|null, critical_window_minutes?: int<1, 43200>|null, name?: string|null, notify_on_acknowledge?: bool|null, notify_on_resolve?: bool|null, warning_consecutive_failures_count?: int<1, 100>|null, warning_threshold?: float|int|null, warning_window_minutes?: int<1, 43200>|null} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float, idempotency_key?: non-empty-string}|null $options
+     * @return AlarmsUpdate
+     */
+    public function update(string $alarmUuid, array $params = [], RequestOptions|array|null $options = null): AlarmsUpdate
+    {
+        $result = $this->operations->call('public.alarms.update', ['alarm_uuid' => $alarmUuid], $params, $options);
+        assert($result instanceof AlarmsUpdate);
+
+        return $result;
+    }
+
+    /**
+     * public.alarms.view — GET /alarms/{alarm_uuid}
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return AlarmsView
+     */
+    public function view(string $alarmUuid, array $params = [], RequestOptions|array|null $options = null): AlarmsView
+    {
+        $result = $this->operations->call('public.alarms.view', ['alarm_uuid' => $alarmUuid], $params, $options);
+        assert($result instanceof AlarmsView);
+
+        return $result;
     }
 }

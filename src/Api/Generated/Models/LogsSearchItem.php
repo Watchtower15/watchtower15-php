@@ -15,11 +15,19 @@ final readonly class LogsSearchItem implements Hydratable
      * @param array<string, mixed> $raw The answer as the server sent it, unknown fields included.
      */
     public function __construct(
+        public ?string $consoleUrl,
+        public ?LogsSearchItemHttp $http,
+        public ?string $identifier,
         public ?string $level,
         public ?\DateTimeImmutable $loggedAt,
         public string $message,
+        public ?\DateTimeImmutable $receivedAt,
         public LogsSearchItemSource $source,
         public ?string $stream,
+        public ?string $time,
+        public string $timeSource,
+        public ?string $unit,
+        public ?string $uuid,
         private array $raw = [],
     ) {
     }
@@ -30,11 +38,19 @@ final readonly class LogsSearchItem implements Hydratable
     public static function fromArray(array $data): static
     {
         return new static(
+            consoleUrl: isset($data['console_url']) ? Hydrate::string($data['console_url']) : null,
+            http: isset($data['http']) ? LogsSearchItemHttp::fromArray(Hydrate::array($data['http'])) : null,
+            identifier: isset($data['identifier']) ? Hydrate::string($data['identifier']) : null,
             level: isset($data['level']) ? Hydrate::string($data['level']) : null,
             loggedAt: isset($data['logged_at']) ? Hydrate::instant($data['logged_at']) : null,
             message: Hydrate::string($data['message'] ?? null),
+            receivedAt: isset($data['received_at']) ? Hydrate::instant($data['received_at']) : null,
             source: LogsSearchItemSource::fromArray(Hydrate::array($data['source'] ?? null)),
             stream: isset($data['stream']) ? Hydrate::string($data['stream']) : null,
+            time: isset($data['time']) ? Hydrate::string($data['time']) : null,
+            timeSource: Hydrate::string($data['time_source'] ?? null),
+            unit: isset($data['unit']) ? Hydrate::string($data['unit']) : null,
+            uuid: isset($data['uuid']) ? Hydrate::string($data['uuid']) : null,
             raw: $data,
         );
     }

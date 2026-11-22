@@ -6,10 +6,13 @@ declare(strict_types=1);
 
 namespace WatchTower15\Api\Generated\Services;
 
+use WatchTower15\Api\Generated\Models\LogsContext;
 use WatchTower15\Api\Generated\Models\LogsFacets;
+use WatchTower15\Api\Generated\Models\LogsGroups;
 use WatchTower15\Api\Generated\Models\LogsHistogram;
 use WatchTower15\Api\Generated\Models\LogsSearchItem;
 use WatchTower15\Api\Generated\Models\LogsSearchMeta;
+use WatchTower15\Api\Generated\Models\LogsView;
 use WatchTower15\Api\Operations;
 use WatchTower15\Api\Page;
 use WatchTower15\Http\RequestOptions;
@@ -21,9 +24,24 @@ class LogsService
     }
 
     /**
+     * public.logs.context — GET /logs/context
+     *
+     * @param array{after?: int<0, 100>, at: string, before?: int<0, 100>, uuid: string} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return LogsContext
+     */
+    public function context(array $params, RequestOptions|array|null $options = null): LogsContext
+    {
+        $result = $this->operations->call('public.logs.context', [], $params, $options);
+        assert($result instanceof LogsContext);
+
+        return $result;
+    }
+
+    /**
      * public.logs.facets — GET /logs/facets
      *
-     * @param array{from?: string, levels?: list<'alert'|'critical'|'debug'|'emergency'|'error'|'info'|'notice'|'warning'>, period?: string, search?: string, source_uuids?: list<non-empty-string>, streams?: list<string>, tag_uuids?: list<non-empty-string>, to?: string} $params
+     * @param array{exclude?: list<string>, exclude_regex?: list<string>, exclude_words?: list<string>, from?: string, http_statuses?: list<string>, identifiers?: list<string>, include?: list<string>, include_regex?: list<string>, include_words?: list<string>, levels?: list<'alert'|'critical'|'debug'|'emergency'|'error'|'info'|'notice'|'unknown'|'warning'>, match?: 'all'|'any', period?: string, search?: string, search_case?: 'insensitive'|'sensitive', search_mode?: 'regex'|'substring', source_uuids?: list<non-empty-string>, streams?: list<string>, tag_uuids?: list<non-empty-string>, to?: string, units?: list<string>} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
      * @return LogsFacets
      */
@@ -36,9 +54,24 @@ class LogsService
     }
 
     /**
+     * public.logs.groups — GET /logs/groups
+     *
+     * @param array{by: 'http_path'|'http_status'|'identifier'|'level'|'pattern'|'source'|'stream'|'unit', exclude?: list<string>, exclude_regex?: list<string>, exclude_words?: list<string>, from?: string, http_statuses?: list<string>, identifiers?: list<string>, include?: list<string>, include_regex?: list<string>, include_words?: list<string>, levels?: list<'alert'|'critical'|'debug'|'emergency'|'error'|'info'|'notice'|'unknown'|'warning'>, limit?: int<1, 100>, match?: 'all'|'any', period?: string, search?: string, search_case?: 'insensitive'|'sensitive', search_mode?: 'regex'|'substring', source_uuids?: list<non-empty-string>, streams?: list<string>, tag_uuids?: list<non-empty-string>, to?: string, units?: list<string>} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return LogsGroups
+     */
+    public function groups(array $params, RequestOptions|array|null $options = null): LogsGroups
+    {
+        $result = $this->operations->call('public.logs.groups', [], $params, $options);
+        assert($result instanceof LogsGroups);
+
+        return $result;
+    }
+
+    /**
      * public.logs.histogram — GET /logs/histogram
      *
-     * @param array{from?: string, levels?: list<'alert'|'critical'|'debug'|'emergency'|'error'|'info'|'notice'|'warning'>, period?: string, search?: string, source_uuids?: list<non-empty-string>, step?: string, streams?: list<string>, tag_uuids?: list<non-empty-string>, to?: string} $params
+     * @param array{exclude?: list<string>, exclude_regex?: list<string>, exclude_words?: list<string>, from?: string, http_statuses?: list<string>, identifiers?: list<string>, include?: list<string>, include_regex?: list<string>, include_words?: list<string>, levels?: list<'alert'|'critical'|'debug'|'emergency'|'error'|'info'|'notice'|'unknown'|'warning'>, match?: 'all'|'any', period?: string, search?: string, search_case?: 'insensitive'|'sensitive', search_mode?: 'regex'|'substring', source_uuids?: list<non-empty-string>, step?: string, streams?: list<string>, tag_uuids?: list<non-empty-string>, to?: string, units?: list<string>} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
      * @return LogsHistogram
      */
@@ -53,7 +86,7 @@ class LogsService
     /**
      * public.logs.search — GET /logs
      *
-     * @param array{cursor?: string, from?: string, levels?: list<'alert'|'critical'|'debug'|'emergency'|'error'|'info'|'notice'|'warning'>, limit?: int<1, 500>, period?: string, search?: string, source_uuids?: list<non-empty-string>, streams?: list<string>, tag_uuids?: list<non-empty-string>, to?: string} $params
+     * @param array{cursor?: string, exclude?: list<string>, exclude_regex?: list<string>, exclude_words?: list<string>, from?: string, http_statuses?: list<string>, identifiers?: list<string>, include?: list<string>, include_regex?: list<string>, include_words?: list<string>, levels?: list<'alert'|'critical'|'debug'|'emergency'|'error'|'info'|'notice'|'unknown'|'warning'>, limit?: int<1, 2000>, match?: 'all'|'any', period?: string, search?: string, search_case?: 'insensitive'|'sensitive', search_mode?: 'regex'|'substring', source_uuids?: list<non-empty-string>, streams?: list<string>, tag_uuids?: list<non-empty-string>, to?: string, units?: list<string>} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
      * @return Page<LogsSearchItem>
      */
@@ -63,5 +96,20 @@ class LogsService
         $page = $this->operations->page('public.logs.search', [], $params, $options);
 
         return $page;
+    }
+
+    /**
+     * public.logs.view — GET /logs/{line_uuid}
+     *
+     * @param array{at: string} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return LogsView
+     */
+    public function view(string $lineUuid, array $params, RequestOptions|array|null $options = null): LogsView
+    {
+        $result = $this->operations->call('public.logs.view', ['line_uuid' => $lineUuid], $params, $options);
+        assert($result instanceof LogsView);
+
+        return $result;
     }
 }

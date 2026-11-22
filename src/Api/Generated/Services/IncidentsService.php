@@ -38,7 +38,7 @@ class IncidentsService
     /**
      * public.incidents.list — GET /incidents
      *
-     * @param array{cursor?: string, direction?: 'asc'|'desc', entity_type?: 'custom_metric'|'database_instance'|'domain'|'log_source'|'server'|'server_port'|'server_system_service'|'server_volume'|'service', entity_uuid?: non-empty-string, from?: string, include_total?: bool, limit?: int<1, 100>, metric_source_uuids?: list<non-empty-string>, period?: string, status?: list<'acknowledged'|'open'|'resolved'>, to?: string} $params
+     * @param array{cursor?: string, direction?: 'asc'|'desc', entity_type?: 'custom_metric'|'database_instance'|'domain'|'log_source'|'server'|'server_port'|'server_system_service'|'server_volume'|'service', entity_uuid?: non-empty-string, from?: string, include_total?: bool, limit?: int<1, 100>, metric_source_uuids?: list<non-empty-string>, period?: string, rule_slug?: list<string>, severity?: list<'critical'|'warning'>, status?: list<'acknowledged'|'open'|'resolved'>, to?: string} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
      * @return Page<IncidentsListItem>
      */

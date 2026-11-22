@@ -15,8 +15,13 @@ final readonly class AuditActionsListItemChangesItem implements Hydratable
      * @param array<string, mixed> $raw The answer as the server sent it, unknown fields included.
      */
     public function __construct(
+        public mixed $added,
+        public bool $changed,
         public string $field,
         public string $label,
+        public mixed $new,
+        public mixed $old,
+        public mixed $removed,
         private array $raw = [],
     ) {
     }
@@ -27,8 +32,13 @@ final readonly class AuditActionsListItemChangesItem implements Hydratable
     public static function fromArray(array $data): static
     {
         return new static(
+            added: $data['added'] ?? null,
+            changed: Hydrate::bool($data['changed'] ?? null),
             field: Hydrate::string($data['field'] ?? null),
             label: Hydrate::string($data['label'] ?? null),
+            new: $data['new'] ?? null,
+            old: $data['old'] ?? null,
+            removed: $data['removed'] ?? null,
             raw: $data,
         );
     }

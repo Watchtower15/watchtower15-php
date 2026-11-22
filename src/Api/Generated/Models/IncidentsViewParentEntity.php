@@ -15,6 +15,7 @@ final readonly class IncidentsViewParentEntity implements Hydratable
      * @param array<string, mixed> $raw The answer as the server sent it, unknown fields included.
      */
     public function __construct(
+        public ?string $name,
         public string $type,
         public string $uuid,
         private array $raw = [],
@@ -27,6 +28,7 @@ final readonly class IncidentsViewParentEntity implements Hydratable
     public static function fromArray(array $data): static
     {
         return new static(
+            name: isset($data['name']) ? Hydrate::string($data['name']) : null,
             type: Hydrate::string($data['type'] ?? null),
             uuid: Hydrate::string($data['uuid'] ?? null),
             raw: $data,

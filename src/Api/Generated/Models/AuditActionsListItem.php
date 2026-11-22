@@ -13,6 +13,7 @@ final readonly class AuditActionsListItem implements Hydratable
 {
     /**
      * @param list<AuditActionsListItemChangesItem> $changes
+     * @param list<AuditActionsListItemContextItem> $context
      * @param array<string, mixed> $raw The answer as the server sent it, unknown fields included.
      */
     public function __construct(
@@ -22,6 +23,10 @@ final readonly class AuditActionsListItem implements Hydratable
         public \DateTimeImmutable $at,
         public ?AuditActionsListItemCategory $category,
         public array $changes,
+        public int $changesCount,
+        public array $context,
+        public ?string $ipAddress,
+        public string $lane,
         public ?string $origin,
         public ?AuditActionsListItemSubject $subject,
         public string $uuid,
@@ -42,6 +47,10 @@ final readonly class AuditActionsListItem implements Hydratable
             at: Hydrate::instant($data['at'] ?? null),
             category: isset($data['category']) ? AuditActionsListItemCategory::fromArray(Hydrate::array($data['category'])) : null,
             changes: Hydrate::list($data['changes'] ?? null, static fn (mixed $row): AuditActionsListItemChangesItem => AuditActionsListItemChangesItem::fromArray(Hydrate::array($row))),
+            changesCount: Hydrate::int($data['changes_count'] ?? null),
+            context: Hydrate::list($data['context'] ?? null, static fn (mixed $row): AuditActionsListItemContextItem => AuditActionsListItemContextItem::fromArray(Hydrate::array($row))),
+            ipAddress: isset($data['ip_address']) ? Hydrate::string($data['ip_address']) : null,
+            lane: Hydrate::string($data['lane'] ?? null),
             origin: isset($data['origin']) ? Hydrate::string($data['origin']) : null,
             subject: isset($data['subject']) ? AuditActionsListItemSubject::fromArray(Hydrate::array($data['subject'])) : null,
             uuid: Hydrate::string($data['uuid'] ?? null),

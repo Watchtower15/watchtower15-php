@@ -15,6 +15,7 @@ final readonly class ServerProfilesViewLogFilesItem implements Hydratable
      * @param array<string, mixed> $raw The answer as the server sent it, unknown fields included.
      */
     public function __construct(
+        public ?string $format,
         public ?string $path,
         public string $sourceType,
         public string $uuid,
@@ -28,6 +29,7 @@ final readonly class ServerProfilesViewLogFilesItem implements Hydratable
     public static function fromArray(array $data): static
     {
         return new static(
+            format: isset($data['format']) ? Hydrate::string($data['format']) : null,
             path: isset($data['path']) ? Hydrate::string($data['path']) : null,
             sourceType: Hydrate::string($data['source_type'] ?? null),
             uuid: Hydrate::string($data['uuid'] ?? null),

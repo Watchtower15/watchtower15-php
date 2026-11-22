@@ -15,6 +15,7 @@ final readonly class ServersOsUpdatesPackagesMeta implements Hydratable
      * @param array<string, mixed> $raw The answer as the server sent it, unknown fields included.
      */
     public function __construct(
+        public ?string $release,
         public string $scope,
         public bool $truncated,
         public ?int $updatesTotal,
@@ -28,6 +29,7 @@ final readonly class ServersOsUpdatesPackagesMeta implements Hydratable
     public static function fromArray(array $data): static
     {
         return new static(
+            release: isset($data['release']) ? Hydrate::string($data['release']) : null,
             scope: Hydrate::string($data['scope'] ?? null),
             truncated: Hydrate::bool($data['truncated'] ?? null),
             updatesTotal: isset($data['updates_total']) ? Hydrate::int($data['updates_total']) : null,

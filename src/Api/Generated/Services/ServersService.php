@@ -6,6 +6,8 @@ declare(strict_types=1);
 
 namespace WatchTower15\Api\Generated\Services;
 
+use WatchTower15\Api\Generated\Models\ServersAlarmsItem;
+use WatchTower15\Api\Generated\Models\ServersAlarmsMeta;
 use WatchTower15\Api\Generated\Models\ServersApprove;
 use WatchTower15\Api\Generated\Models\ServersArchive;
 use WatchTower15\Api\Generated\Models\ServersDiskReport;
@@ -46,6 +48,21 @@ class ServersService
 {
     public function __construct(protected readonly Operations $operations)
     {
+    }
+
+    /**
+     * public.servers.alarms — GET /servers/{server_uuid}/alarms
+     *
+     * @param array{active?: bool, cursor?: string, entity_type?: 'server'|'server_port'|'server_system_service'|'server_volume', include_total?: bool, limit?: int<1, 100>, rule_slug?: list<string>, state?: 'critical'|'inactive'|'ok'|'warning'} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return Page<ServersAlarmsItem>
+     */
+    public function alarms(string $serverUuid, array $params = [], RequestOptions|array|null $options = null): Page
+    {
+        /** @var Page<ServersAlarmsItem> $page */
+        $page = $this->operations->page('public.servers.alarms', ['server_uuid' => $serverUuid], $params, $options);
+
+        return $page;
     }
 
     /**
@@ -155,7 +172,7 @@ class ServersService
     /**
      * public.servers.incidents — GET /servers/{server_uuid}/incidents
      *
-     * @param array{cursor?: string, direction?: 'asc'|'desc', from?: string, include_total?: bool, limit?: int<1, 100>, period?: string, status?: list<'acknowledged'|'open'|'resolved'>, to?: string} $params
+     * @param array{cursor?: string, direction?: 'asc'|'desc', from?: string, include_total?: bool, limit?: int<1, 100>, period?: string, rule_slug?: list<string>, severity?: list<'critical'|'warning'>, status?: list<'acknowledged'|'open'|'resolved'>, to?: string} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
      * @return Page<ServersIncidentsItem>
      */
@@ -201,7 +218,7 @@ class ServersService
     /**
      * public.servers.list — GET /servers
      *
-     * @param array{archived?: bool, connectivity?: list<'catching_up'|'connected'|'delayed'|'never_seen'|'powered_off'|'rejected'|'unreachable'>, cursor?: string, direction?: 'asc'|'desc', health?: list<'critical'|'healthy'|'unknown'|'warning'>, include_total?: bool, limit?: int<1, 100>, os_type?: 'freebsd'|'linux'|'other'|'windows', search?: string, sort?: 'agent_status'|'health_status'|'hostname'|'last_seen'|'name', status?: list<'active'|'pending_approval'|'revoked'>, tag_uuids?: list<non-empty-string>} $params
+     * @param array{archived?: bool, connectivity?: list<'catching_up'|'connected'|'delayed'|'never_seen'|'powered_off'|'rejected'|'unreachable'>, cursor?: string, direction?: 'asc'|'desc', health?: list<'critical'|'healthy'|'unknown'|'warning'>, include_total?: bool, limit?: int<1, 100>, os_type?: 'freebsd'|'linux'|'other'|'windows', search?: string, security_health?: list<'critical'|'healthy'|'unknown'|'warning'>, sort?: 'agent_status'|'health_status'|'hostname'|'last_seen'|'name', status?: list<'active'|'pending_approval'|'revoked'>, tag_uuids?: list<non-empty-string>} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
      * @return Page<ServersListItem>
      */

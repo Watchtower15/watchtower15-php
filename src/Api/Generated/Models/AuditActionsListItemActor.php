@@ -15,6 +15,7 @@ final readonly class AuditActionsListItemActor implements Hydratable
      * @param array<string, mixed> $raw The answer as the server sent it, unknown fields included.
      */
     public function __construct(
+        public ?string $email,
         public ?string $name,
         public string $type,
         public ?string $uuid,
@@ -28,6 +29,7 @@ final readonly class AuditActionsListItemActor implements Hydratable
     public static function fromArray(array $data): static
     {
         return new static(
+            email: isset($data['email']) ? Hydrate::string($data['email']) : null,
             name: isset($data['name']) ? Hydrate::string($data['name']) : null,
             type: Hydrate::string($data['type'] ?? null),
             uuid: isset($data['uuid']) ? Hydrate::string($data['uuid']) : null,

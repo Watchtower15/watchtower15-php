@@ -18,6 +18,7 @@ final readonly class IncidentsListItem implements Hydratable
     public function __construct(
         public ?\DateTimeImmutable $acknowledgedAt,
         public ?IncidentsListItemAcknowledgedBy $acknowledgedBy,
+        public ?string $alarmUuid,
         public string $consoleUrl,
         public IncidentsListItemEntity $entity,
         public string $message,
@@ -30,6 +31,7 @@ final readonly class IncidentsListItem implements Hydratable
         public string $ruleName,
         public mixed $ruleSlug,
         public mixed $scanType,
+        public ?IncidentsListItemServer $server,
         public string $severity,
         public string $status,
         public ?\DateTimeImmutable $triggeredAt,
@@ -46,6 +48,7 @@ final readonly class IncidentsListItem implements Hydratable
         return new static(
             acknowledgedAt: isset($data['acknowledged_at']) ? Hydrate::instant($data['acknowledged_at']) : null,
             acknowledgedBy: isset($data['acknowledged_by']) ? IncidentsListItemAcknowledgedBy::fromArray(Hydrate::array($data['acknowledged_by'])) : null,
+            alarmUuid: isset($data['alarm_uuid']) ? Hydrate::string($data['alarm_uuid']) : null,
             consoleUrl: Hydrate::string($data['console_url'] ?? null),
             entity: IncidentsListItemEntity::fromArray(Hydrate::array($data['entity'] ?? null)),
             message: Hydrate::string($data['message'] ?? null),
@@ -58,6 +61,7 @@ final readonly class IncidentsListItem implements Hydratable
             ruleName: Hydrate::string($data['rule_name'] ?? null),
             ruleSlug: $data['rule_slug'] ?? null,
             scanType: $data['scan_type'] ?? null,
+            server: isset($data['server']) ? IncidentsListItemServer::fromArray(Hydrate::array($data['server'])) : null,
             severity: Hydrate::string($data['severity'] ?? null),
             status: Hydrate::string($data['status'] ?? null),
             triggeredAt: isset($data['triggered_at']) ? Hydrate::instant($data['triggered_at']) : null,

@@ -20,7 +20,7 @@ class AuditActionsService
     /**
      * public.auditActions.list — GET /audit-actions
      *
-     * @param array{action?: string, actor_uuid?: non-empty-string, cursor?: string, entity_type?: 'alarm_channel'|'alarm_policy'|'contact_group'|'custom_metric'|'dashboard'|'database_instance'|'domain'|'log_source'|'metric_source'|'organisation'|'report'|'role'|'server'|'server_port'|'server_profile'|'server_system_service'|'server_volume'|'service'|'tag'|'tag_group'|'user', entity_uuid?: non-empty-string, from?: string, include_total?: bool, limit?: int<1, 100>, period?: string, to?: string} $params
+     * @param array{action?: string, actor_uuid?: non-empty-string, category?: 'ai_access'|'alarm_channel'|'alarm_incident'|'alarm_policy'|'alarm_rule'|'api_token'|'auth'|'billing'|'contact_group'|'custom_metric'|'dashboard'|'database_instance'|'domain'|'email'|'health'|'invitation'|'log_source'|'metric_source'|'mfa'|'organisation'|'report'|'role'|'server'|'server_profile'|'service'|'sso'|'system'|'tag'|'user', cursor?: string, direction?: 'asc'|'desc', entity_type?: 'alarm_channel'|'alarm_policy'|'contact_group'|'custom_metric'|'dashboard'|'database_instance'|'domain'|'log_source'|'metric_source'|'organisation'|'report'|'role'|'server'|'server_port'|'server_profile'|'server_system_service'|'server_volume'|'service'|'tag'|'tag_group'|'user', entity_uuid?: non-empty-string, from?: string, include_total?: bool, lane?: 'alarms'|'changes'|'health'|'incidents'|'lifecycle', limit?: int<1, 100>, period?: string, resource?: string, to?: string} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
      * @return Page<AuditActionsListItem>
      */

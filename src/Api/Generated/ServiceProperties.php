@@ -8,8 +8,11 @@ namespace WatchTower15\Api\Generated;
 
 use WatchTower15\Api\Generated\Services\AlarmChannelsService;
 use WatchTower15\Api\Generated\Services\AlarmPoliciesService;
+use WatchTower15\Api\Generated\Services\AlarmRulesService;
 use WatchTower15\Api\Generated\Services\AlarmsService;
 use WatchTower15\Api\Generated\Services\AuditActionsService;
+use WatchTower15\Api\Generated\Services\AuditActorsService;
+use WatchTower15\Api\Generated\Services\AuditCategoriesService;
 use WatchTower15\Api\Generated\Services\CustomMetricsService;
 use WatchTower15\Api\Generated\Services\DatabasesService;
 use WatchTower15\Api\Generated\Services\DomainsService;
@@ -32,8 +35,11 @@ trait ServiceProperties
 {
     public readonly AlarmChannelsService $alarmChannels;
     public readonly AlarmPoliciesService $alarmPolicies;
+    public readonly AlarmRulesService $alarmRules;
     public readonly AlarmsService $alarms;
     public readonly AuditActionsService $auditActions;
+    public readonly AuditActorsService $auditActors;
+    public readonly AuditCategoriesService $auditCategories;
     public readonly CustomMetricsService $customMetrics;
     public readonly DatabasesService $databases;
     public readonly DomainsService $domains;
@@ -54,8 +60,11 @@ trait ServiceProperties
     {
         $this->alarmChannels = new AlarmChannelsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->alarmPolicies = new AlarmPoliciesService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
+        $this->alarmRules = new AlarmRulesService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->alarms = new AlarmsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->auditActions = new AuditActionsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
+        $this->auditActors = new AuditActorsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
+        $this->auditCategories = new AuditCategoriesService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->customMetrics = new CustomMetricsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->databases = new DatabasesService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->domains = new DomainsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor

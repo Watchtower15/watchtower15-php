@@ -12,12 +12,14 @@ use WatchTower15\Internal\Hydrate;
 final readonly class AlarmsListItem implements Hydratable
 {
     /**
+     * @param list<AlarmsListItemAlarmPoliciesItem> $alarmPolicies
      * @param array<string, mixed> $raw The answer as the server sent it, unknown fields included.
      */
     public function __construct(
         public bool $acknowledged,
         public bool $active,
         public ?string $aggregation,
+        public array $alarmPolicies,
         public ?string $alarmType,
         public string $classification,
         public string $comparisonOperator,
@@ -25,10 +27,14 @@ final readonly class AlarmsListItem implements Hydratable
         public int|float|null $criticalThreshold,
         public ?int $criticalWindowMinutes,
         public ?string $description,
+        public AlarmsListItemEntity $entity,
         public ?string $inactiveReason,
-        public mixed $metricName,
+        public string $metricName,
         public string $name,
-        public mixed $ruleSlug,
+        public bool $notifyOnAcknowledge,
+        public bool $notifyOnResolve,
+        public ?AlarmsListItemParentEntity $parentEntity,
+        public string $ruleSlug,
         public bool $selfResolving,
         public string $state,
         public ?\DateTimeImmutable $stateSince,
@@ -50,6 +56,7 @@ final readonly class AlarmsListItem implements Hydratable
             acknowledged: Hydrate::bool($data['acknowledged'] ?? null),
             active: Hydrate::bool($data['active'] ?? null),
             aggregation: isset($data['aggregation']) ? Hydrate::string($data['aggregation']) : null,
+            alarmPolicies: Hydrate::list($data['alarm_policies'] ?? null, static fn (mixed $row): AlarmsListItemAlarmPoliciesItem => AlarmsListItemAlarmPoliciesItem::fromArray(Hydrate::array($row))),
             alarmType: isset($data['alarm_type']) ? Hydrate::string($data['alarm_type']) : null,
             classification: Hydrate::string($data['classification'] ?? null),
             comparisonOperator: Hydrate::string($data['comparison_operator'] ?? null),
@@ -57,10 +64,14 @@ final readonly class AlarmsListItem implements Hydratable
             criticalThreshold: isset($data['critical_threshold']) ? Hydrate::float($data['critical_threshold']) : null,
             criticalWindowMinutes: isset($data['critical_window_minutes']) ? Hydrate::int($data['critical_window_minutes']) : null,
             description: isset($data['description']) ? Hydrate::string($data['description']) : null,
+            entity: AlarmsListItemEntity::fromArray(Hydrate::array($data['entity'] ?? null)),
             inactiveReason: isset($data['inactive_reason']) ? Hydrate::string($data['inactive_reason']) : null,
-            metricName: $data['metric_name'] ?? null,
+            metricName: Hydrate::string($data['metric_name'] ?? null),
             name: Hydrate::string($data['name'] ?? null),
-            ruleSlug: $data['rule_slug'] ?? null,
+            notifyOnAcknowledge: Hydrate::bool($data['notify_on_acknowledge'] ?? null),
+            notifyOnResolve: Hydrate::bool($data['notify_on_resolve'] ?? null),
+            parentEntity: isset($data['parent_entity']) ? AlarmsListItemParentEntity::fromArray(Hydrate::array($data['parent_entity'])) : null,
+            ruleSlug: Hydrate::string($data['rule_slug'] ?? null),
             selfResolving: Hydrate::bool($data['self_resolving'] ?? null),
             state: Hydrate::string($data['state'] ?? null),
             stateSince: isset($data['state_since']) ? Hydrate::instant($data['state_since']) : null,

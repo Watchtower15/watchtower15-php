@@ -18,6 +18,7 @@ final readonly class ServersIncidentsItem implements Hydratable
     public function __construct(
         public ?\DateTimeImmutable $acknowledgedAt,
         public ?ServersIncidentsItemAcknowledgedBy $acknowledgedBy,
+        public ?string $alarmUuid,
         public string $consoleUrl,
         public ServersIncidentsItemEntity $entity,
         public string $message,
@@ -46,6 +47,7 @@ final readonly class ServersIncidentsItem implements Hydratable
         return new static(
             acknowledgedAt: isset($data['acknowledged_at']) ? Hydrate::instant($data['acknowledged_at']) : null,
             acknowledgedBy: isset($data['acknowledged_by']) ? ServersIncidentsItemAcknowledgedBy::fromArray(Hydrate::array($data['acknowledged_by'])) : null,
+            alarmUuid: isset($data['alarm_uuid']) ? Hydrate::string($data['alarm_uuid']) : null,
             consoleUrl: Hydrate::string($data['console_url'] ?? null),
             entity: ServersIncidentsItemEntity::fromArray(Hydrate::array($data['entity'] ?? null)),
             message: Hydrate::string($data['message'] ?? null),
