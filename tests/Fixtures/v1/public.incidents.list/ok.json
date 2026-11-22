@@ -16,7 +16,8 @@
       },
       "parent_entity": {
         "type": "x",
-        "uuid": "5f0c2e8a-1b0d-4c7e-9a52-0d3f6b8e4a11"
+        "uuid": "5f0c2e8a-1b0d-4c7e-9a52-0d3f6b8e4a11",
+        "name": "x"
       },
       "triggered_at": 1798761600000,
       "acknowledged_at": 1798761600000,
@@ -35,7 +36,12 @@
           "status": "sent",
           "sent_at": 1798761602000
         }
-      ]
+      ],
+      "alarm_uuid": "5f0c2e8a-1b0d-4c7e-9a52-0d3f6b8e4a11",
+      "server": {
+        "uuid": "x",
+        "name": "x"
+      }
     }
   ],
   "next_cursor": null,

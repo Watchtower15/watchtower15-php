@@ -23,7 +23,9 @@
           "name": "x"
         }
       ],
-      "console_url": "x"
+      "console_url": "x",
+      "supplier_identifier": null,
+      "supplier_name": null
     }
   ],
   "next_cursor": null,

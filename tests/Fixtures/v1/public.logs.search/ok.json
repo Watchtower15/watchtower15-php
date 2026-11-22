@@ -1,6 +1,7 @@
 {
   "data": [
     {
+      "uuid": "5f0c2e8a-1b0d-4c7e-9a52-0d3f6b8e4a11",
       "logged_at": 1798761600000,
       "level": "x",
       "stream": "x",
@@ -9,6 +10,19 @@
         "type": "x",
         "uuid": "5f0c2e8a-1b0d-4c7e-9a52-0d3f6b8e4a11",
         "name": "x"
+      },
+      "time": "x",
+      "console_url": "x",
+      "time_source": "x",
+      "received_at": 1,
+      "unit": "x",
+      "identifier": "x",
+      "http": {
+        "status": 1,
+        "method": "x",
+        "path": "x",
+        "upstream_status": "x",
+        "duration_ms": 1
       }
     }
   ],

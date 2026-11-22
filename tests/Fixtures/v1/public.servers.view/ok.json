@@ -72,6 +72,15 @@
         }
       }
     ],
-    "console_url": "x"
+    "console_url": "x",
+    "supplier_identifier": null,
+    "supplier_name": null,
+    "public_ipv4": "x",
+    "connection": {
+      "type": "x",
+      "proxy_host": "x",
+      "proxy_port": 1
+    },
+    "notes": "x"
   }
 }
