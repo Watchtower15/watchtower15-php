@@ -11,7 +11,7 @@ use WatchTower15\Api\Hydratable;
 /** What the runtime reads: one row per generated operation. */
 final class OperationTable
 {
-    public const SPEC_SHA256 = '596107759fbd1e515fcc34ac5e76af6180ce8970d6a7f19c031c1f5bbdb05d4d';
+    public const SPEC_SHA256 = '439e8f99b500a6bec5a675ab85a46a2fde7d61d7b0216c9849a98ce3def38d4e';
 
     /**
      * @var array<string, array{method: string, path: string, pathParams: list<string>, query: list<string>, body: list<string>|null, paged: bool, meta: class-string<Hydratable>|null, model: class-string<Hydratable>|null, status: int, idempotent: bool}>
@@ -345,7 +345,7 @@ final class OperationTable
             'method' => 'GET',
             'path' => '/custom-metrics/{custom_metric_uuid}/series',
             'pathParams' => ['custom_metric_uuid'],
-            'query' => ['aggregation', 'from', 'period', 'step', 'to'],
+            'query' => ['aggregation', 'from', 'period', 'step', 'to', 'tz'],
             'body' => null,
             'paged' => false,
             'meta' => null,
@@ -1137,7 +1137,7 @@ final class OperationTable
             'method' => 'GET',
             'path' => '/metric-sources/{metric_source_uuid}/series',
             'pathParams' => ['metric_source_uuid'],
-            'query' => ['aggregation', 'cursor', 'from', 'limit', 'period', 'step', 'to'],
+            'query' => ['aggregation', 'cursor', 'from', 'limit', 'period', 'step', 'to', 'tz'],
             'body' => null,
             'paged' => true,
             'meta' => \WatchTower15\Api\Generated\Models\MetricSourcesSeriesMeta::class,
@@ -1925,6 +1925,30 @@ final class OperationTable
             'status' => 202,
             'idempotent' => true,
         ],
+        'public.services.runsList' => [
+            'method' => 'GET',
+            'path' => '/services/{service_uuid}/runs',
+            'pathParams' => ['service_uuid'],
+            'query' => ['collector_uuid', 'cursor', 'failed_step_uuid', 'from', 'limit', 'period', 'status', 'to'],
+            'body' => null,
+            'paged' => true,
+            'meta' => \WatchTower15\Api\Generated\Models\ServicesRunsListMeta::class,
+            'model' => \WatchTower15\Api\Generated\Models\ServicesRunsListItem::class,
+            'status' => 200,
+            'idempotent' => true,
+        ],
+        'public.services.runsView' => [
+            'method' => 'GET',
+            'path' => '/services/{service_uuid}/runs/{run_uuid}',
+            'pathParams' => ['service_uuid', 'run_uuid'],
+            'query' => [],
+            'body' => null,
+            'paged' => false,
+            'meta' => null,
+            'model' => \WatchTower15\Api\Generated\Models\ServicesRunsView::class,
+            'status' => 200,
+            'idempotent' => true,
+        ],
         'public.services.scans' => [
             'method' => 'GET',
             'path' => '/services/{service_uuid}/scans',
@@ -1932,7 +1956,7 @@ final class OperationTable
             'query' => ['cursor', 'include_total', 'limit', 'type'],
             'body' => null,
             'paged' => true,
-            'meta' => null,
+            'meta' => \WatchTower15\Api\Generated\Models\ServicesScansMeta::class,
             'model' => \WatchTower15\Api\Generated\Models\ServicesScansItem::class,
             'status' => 200,
             'idempotent' => true,
@@ -2162,6 +2186,30 @@ final class OperationTable
             'paged' => false,
             'meta' => null,
             'model' => \WatchTower15\Api\Generated\Models\TagsView::class,
+            'status' => 200,
+            'idempotent' => true,
+        ],
+        'public.userAiClients.list' => [
+            'method' => 'GET',
+            'path' => '/user/ai-clients',
+            'pathParams' => [],
+            'query' => ['cursor', 'direction', 'include_total', 'limit', 'search', 'sort', 'status'],
+            'body' => null,
+            'paged' => true,
+            'meta' => null,
+            'model' => \WatchTower15\Api\Generated\Models\UserAiClientsListItem::class,
+            'status' => 200,
+            'idempotent' => true,
+        ],
+        'public.userApiKeys.list' => [
+            'method' => 'GET',
+            'path' => '/user/api-keys',
+            'pathParams' => [],
+            'query' => ['cursor', 'direction', 'include_total', 'limit', 'search', 'sort', 'status'],
+            'body' => null,
+            'paged' => true,
+            'meta' => null,
+            'model' => \WatchTower15\Api\Generated\Models\UserApiKeysListItem::class,
             'status' => 200,
             'idempotent' => true,
         ],

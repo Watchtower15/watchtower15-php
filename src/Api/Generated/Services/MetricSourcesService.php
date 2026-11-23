@@ -119,7 +119,7 @@ class MetricSourcesService
     /**
      * public.metricSources.series — GET /metric-sources/{metric_source_uuid}/series
      *
-     * @param array{aggregation?: 'avg'|'last'|'max'|'min', cursor?: string, from?: string, limit?: int<1, 25>, period?: string, step?: '1d'|'1m'|'1w'|'2h'|'30m'|'30s'|'5m'|'6h', to?: string} $params
+     * @param array{aggregation?: 'avg'|'last'|'max'|'min', cursor?: string, from?: string, limit?: int<1, 25>, period?: string, step?: '1d'|'1m'|'1w'|'2h'|'30m'|'30s'|'5m'|'6h', to?: string, tz?: string} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
      * @return Page<MetricSourcesSeriesItem>
      */

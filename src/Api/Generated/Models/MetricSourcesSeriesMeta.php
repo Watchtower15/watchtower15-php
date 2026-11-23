@@ -16,6 +16,7 @@ final readonly class MetricSourcesSeriesMeta implements Hydratable
      */
     public function __construct(
         public int $stepSeconds,
+        public ?string $tz,
         public MetricSourcesSeriesMetaWindow $window,
         private array $raw = [],
     ) {
@@ -28,6 +29,7 @@ final readonly class MetricSourcesSeriesMeta implements Hydratable
     {
         return new static(
             stepSeconds: Hydrate::int($data['step_seconds'] ?? null),
+            tz: isset($data['tz']) ? Hydrate::string($data['tz']) : null,
             window: MetricSourcesSeriesMetaWindow::fromArray(Hydrate::array($data['window'] ?? null)),
             raw: $data,
         );

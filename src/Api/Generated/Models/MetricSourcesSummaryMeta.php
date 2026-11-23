@@ -15,6 +15,7 @@ final readonly class MetricSourcesSummaryMeta implements Hydratable
      * @param array<string, mixed> $raw The answer as the server sent it, unknown fields included.
      */
     public function __construct(
+        public bool $rolledUp,
         public MetricSourcesSummaryMetaWindow $window,
         private array $raw = [],
     ) {
@@ -26,6 +27,7 @@ final readonly class MetricSourcesSummaryMeta implements Hydratable
     public static function fromArray(array $data): static
     {
         return new static(
+            rolledUp: Hydrate::bool($data['rolled_up'] ?? null),
             window: MetricSourcesSummaryMetaWindow::fromArray(Hydrate::array($data['window'] ?? null)),
             raw: $data,
         );

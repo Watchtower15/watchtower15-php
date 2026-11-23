@@ -131,7 +131,7 @@ class CustomMetricsService
     /**
      * public.customMetrics.series — GET /custom-metrics/{custom_metric_uuid}/series
      *
-     * @param array{aggregation?: 'avg'|'last'|'max'|'min'|'sum', from?: string, period?: string, step?: '1d'|'1m'|'1w'|'2h'|'30m'|'30s'|'5m'|'6h', to?: string} $params
+     * @param array{aggregation?: 'avg'|'last'|'max'|'min'|'sum', from?: string, period?: string, step?: '1d'|'1m'|'1w'|'2h'|'30m'|'30s'|'5m'|'6h', to?: string, tz?: string} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
      * @return CustomMetricsSeries
      */

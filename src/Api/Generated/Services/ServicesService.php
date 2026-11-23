@@ -16,7 +16,11 @@ use WatchTower15\Api\Generated\Models\ServicesPause;
 use WatchTower15\Api\Generated\Models\ServicesReassign;
 use WatchTower15\Api\Generated\Models\ServicesResume;
 use WatchTower15\Api\Generated\Models\ServicesRunNow;
+use WatchTower15\Api\Generated\Models\ServicesRunsListItem;
+use WatchTower15\Api\Generated\Models\ServicesRunsListMeta;
+use WatchTower15\Api\Generated\Models\ServicesRunsView;
 use WatchTower15\Api\Generated\Models\ServicesScansItem;
+use WatchTower15\Api\Generated\Models\ServicesScansMeta;
 use WatchTower15\Api\Generated\Models\ServicesTestRunsStartNew;
 use WatchTower15\Api\Generated\Models\ServicesTestRunsStartSaved;
 use WatchTower15\Api\Generated\Models\ServicesTestRunsView;
@@ -211,6 +215,36 @@ class ServicesService
     {
         $result = $this->operations->call('public.services.runNow', ['service_uuid' => $serviceUuid], $params, $options);
         assert($result instanceof ServicesRunNow);
+
+        return $result;
+    }
+
+    /**
+     * public.services.runsList — GET /services/{service_uuid}/runs
+     *
+     * @param array{collector_uuid?: string, cursor?: string, failed_step_uuid?: string, from?: string, limit?: int<1, 100>, period?: string, status?: list<'budget_exceeded'|'failed'|'passed'|'refused'>, to?: string} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return Page<ServicesRunsListItem>
+     */
+    public function runsList(string $serviceUuid, array $params = [], RequestOptions|array|null $options = null): Page
+    {
+        /** @var Page<ServicesRunsListItem> $page */
+        $page = $this->operations->page('public.services.runsList', ['service_uuid' => $serviceUuid], $params, $options);
+
+        return $page;
+    }
+
+    /**
+     * public.services.runsView — GET /services/{service_uuid}/runs/{run_uuid}
+     *
+     * @param array{} $params
+     * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
+     * @return ServicesRunsView
+     */
+    public function runsView(string $serviceUuid, string $runUuid, array $params = [], RequestOptions|array|null $options = null): ServicesRunsView
+    {
+        $result = $this->operations->call('public.services.runsView', ['service_uuid' => $serviceUuid, 'run_uuid' => $runUuid], $params, $options);
+        assert($result instanceof ServicesRunsView);
 
         return $result;
     }

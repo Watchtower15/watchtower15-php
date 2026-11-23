@@ -23,6 +23,7 @@ final readonly class CustomMetricsSeries implements Hydratable
         public array $series,
         public string $source,
         public int $stepSeconds,
+        public ?string $tz,
         public CustomMetricsSeriesWindow $window,
         private array $raw = [],
     ) {
@@ -41,6 +42,7 @@ final readonly class CustomMetricsSeries implements Hydratable
             series: Hydrate::list($data['series'] ?? null, static fn (mixed $row): CustomMetricsSeriesSeriesItem => CustomMetricsSeriesSeriesItem::fromArray(Hydrate::array($row))),
             source: Hydrate::string($data['source'] ?? null),
             stepSeconds: Hydrate::int($data['step_seconds'] ?? null),
+            tz: isset($data['tz']) ? Hydrate::string($data['tz']) : null,
             window: CustomMetricsSeriesWindow::fromArray(Hydrate::array($data['window'] ?? null)),
             raw: $data,
         );

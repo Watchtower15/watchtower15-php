@@ -27,6 +27,8 @@ use WatchTower15\Api\Generated\Services\ServersService;
 use WatchTower15\Api\Generated\Services\ServicesService;
 use WatchTower15\Api\Generated\Services\TagGroupsService;
 use WatchTower15\Api\Generated\Services\TagsService;
+use WatchTower15\Api\Generated\Services\UserAiClientsService;
+use WatchTower15\Api\Generated\Services\UserApiKeysService;
 use WatchTower15\Api\Operations;
 use WatchTower15\Api\Services\ScansService;
 
@@ -55,6 +57,8 @@ trait ServiceProperties
     public readonly ServicesService $services;
     public readonly TagGroupsService $tagGroups;
     public readonly TagsService $tags;
+    public readonly UserAiClientsService $userAiClients;
+    public readonly UserApiKeysService $userApiKeys;
 
     private function initialiseServices(Operations $operations): void
     {
@@ -80,5 +84,7 @@ trait ServiceProperties
         $this->services = new ServicesService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->tagGroups = new TagGroupsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
         $this->tags = new TagsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
+        $this->userAiClients = new UserAiClientsService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
+        $this->userApiKeys = new UserApiKeysService($operations); // @phpstan-ignore property.readOnlyAssignNotInConstructor
     }
 }
