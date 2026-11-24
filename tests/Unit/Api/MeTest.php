@@ -57,6 +57,29 @@ final class MeTest extends TestCase
         self::assertSame(['x' => 1], $me->toArray());
     }
 
+    /** `effectiveScopes` reads `key.effective_scopes` and `roles` reads `user.roles`: a service account's, null for a person or an older backend. */
+    public function testEffectiveScopesAndRolesAreReadAndAbsentFromAnOlderBackendIsEmpty(): void
+    {
+        $decoded = json_decode(Harness::meBody()->getBody()->getContents(), true);
+        self::assertIsArray($decoded);
+        $answer = $decoded['data'];
+        self::assertIsArray($answer);
+
+        $answer['key']['effective_scopes'] = ['tags.view', 'services.view'];
+        $answer['user']['roles'] = [['uuid' => 'r-1', 'name' => 'Monitoring']];
+        $me = \WatchTower15\Api\Me::fromData($answer);
+        self::assertSame(['tags.view', 'services.view'], $me->effectiveScopes);
+        self::assertSame([['uuid' => 'r-1', 'name' => 'Monitoring']], $me->roles);
+
+        $answer['user']['roles'] = null;
+        self::assertNull(\WatchTower15\Api\Me::fromData($answer)->roles);
+
+        unset($answer['key']['effective_scopes'], $answer['user']['roles']);
+        $older = \WatchTower15\Api\Me::fromData($answer);
+        self::assertSame([], $older->effectiveScopes);
+        self::assertNull($older->roles);
+    }
+
     public function testM2AnUnauthorisedKeyRaisesAuthenticationException(): void
     {
         $h = new Harness();

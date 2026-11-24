@@ -12,6 +12,8 @@ final readonly class Me
     /**
      * @param list<string>         $scopes
      * @param array<string, mixed> $raw
+     * @param list<string>         $effectiveScopes
+     * @param list<array<string, mixed>>|null $roles
      */
     public function __construct(
         public string $keyUuid,
@@ -28,6 +30,10 @@ final readonly class Me
         private array $raw = [],
         /** `person`, or `service_account` for an account that owns keys for automation; null from a backend that does not say (Plan_API_06 D22). */
         public ?string $accountType = null,
+        /** The key's scopes its owner's permissions allow now: what a call can use; empty from a backend that does not say. */
+        public array $effectiveScopes = [],
+        /** A service account's roles, which set what its keys may use; null for a person or from a backend that does not say. */
+        public ?array $roles = null,
     ) {
     }
 
@@ -48,6 +54,23 @@ final readonly class Me
             }
         }
 
+        $effective = [];
+        foreach (is_array($key['effective_scopes'] ?? null) ? $key['effective_scopes'] : [] as $scope) {
+            if (is_string($scope)) {
+                $effective[] = $scope;
+            }
+        }
+        $roles = null;
+        if (is_array($user['roles'] ?? null)) {
+            $roles = [];
+            foreach ($user['roles'] as $role) {
+                if (is_array($role)) {
+                    /** @var array<string, mixed> $role */
+                    $roles[] = $role;
+                }
+            }
+        }
+
         return new self(
             self::string($key, 'uuid'),
             self::string($key, 'name'),
@@ -62,6 +85,8 @@ final readonly class Me
             self::string($organisation, 'name'),
             $data,
             is_string($user['account_type'] ?? null) ? $user['account_type'] : null,
+            $effective,
+            $roles,
         );
     }
 
