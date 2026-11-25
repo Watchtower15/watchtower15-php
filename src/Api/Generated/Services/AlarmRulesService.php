@@ -20,7 +20,7 @@ class AlarmRulesService
     /**
      * public.alarmRules.list — GET /alarm-rules
      *
-     * @param array{cursor?: string, domain_type?: 'apex'|'subdomain'|'wildcard', engines?: list<'mariadb'|'mysql'>, entity_type: 'custom_metric'|'database_instance'|'domain'|'log_source'|'server'|'server_port'|'server_system_service'|'server_volume'|'service', include_total?: bool, limit?: int<1, 100>, protocol?: 'http'|'https'|'smtp'|'tcp'|'udp'} $params
+     * @param array{cursor?: string, domain_type?: 'apex'|'subdomain'|'wildcard', engines?: list<'mariadb'|'mysql'>, entity_type: 'custom_metric'|'database_instance'|'domain'|'log_source'|'server'|'server_port'|'server_system_service'|'server_volume'|'service', include_total?: bool, limit?: int<1, 100>, os?: 'linux'|'windows', protocol?: 'http'|'https'|'smtp'|'tcp'|'udp'} $params
      * @param RequestOptions|array{timeout?: float, connect_timeout?: float, max_retries?: int<0, 10>, max_retry_wait?: float}|null $options
      * @return Page<AlarmRulesListItem>
      */

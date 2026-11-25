@@ -17,6 +17,7 @@ final readonly class AlarmRulesListItem implements Hydratable
      */
     public function __construct(
         public ?string $alarmType,
+        public string $appliesToOs,
         public string $classification,
         public string $comparisonOperator,
         public bool $consecutiveConfigurable,
@@ -46,6 +47,7 @@ final readonly class AlarmRulesListItem implements Hydratable
     {
         return new static(
             alarmType: isset($data['alarm_type']) ? Hydrate::string($data['alarm_type']) : null,
+            appliesToOs: Hydrate::string($data['applies_to_os'] ?? null),
             classification: Hydrate::string($data['classification'] ?? null),
             comparisonOperator: Hydrate::string($data['comparison_operator'] ?? null),
             consecutiveConfigurable: Hydrate::bool($data['consecutive_configurable'] ?? null),

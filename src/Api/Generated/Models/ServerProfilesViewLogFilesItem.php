@@ -12,10 +12,14 @@ use WatchTower15\Internal\Hydrate;
 final readonly class ServerProfilesViewLogFilesItem implements Hydratable
 {
     /**
+     * @param list<int> $eventIds
      * @param array<string, mixed> $raw The answer as the server sent it, unknown fields included.
      */
     public function __construct(
+        public ?string $channel,
+        public array $eventIds,
         public ?string $format,
+        public ?string $minLevel,
         public ?string $path,
         public string $sourceType,
         public string $uuid,
@@ -29,7 +33,10 @@ final readonly class ServerProfilesViewLogFilesItem implements Hydratable
     public static function fromArray(array $data): static
     {
         return new static(
+            channel: isset($data['channel']) ? Hydrate::string($data['channel']) : null,
+            eventIds: Hydrate::list($data['event_ids'] ?? null, Hydrate::int(...)),
             format: isset($data['format']) ? Hydrate::string($data['format']) : null,
+            minLevel: isset($data['min_level']) ? Hydrate::string($data['min_level']) : null,
             path: isset($data['path']) ? Hydrate::string($data['path']) : null,
             sourceType: Hydrate::string($data['source_type'] ?? null),
             uuid: Hydrate::string($data['uuid'] ?? null),

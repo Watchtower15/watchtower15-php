@@ -11,7 +11,7 @@ use WatchTower15\Api\Hydratable;
 /** What the runtime reads: one row per generated operation. */
 final class OperationTable
 {
-    public const SPEC_SHA256 = '3cb419c609a4153d176232785cc6e387e86136da2d554b25f7fe6abbde6991d0';
+    public const SPEC_SHA256 = '2eb9e805a7cb236acbb0586b3fdae66cb1a9374ef971e439024540e92068e1e2';
 
     /**
      * @var array<string, array{method: string, path: string, pathParams: list<string>, query: list<string>, body: list<string>|null, paged: bool, meta: class-string<Hydratable>|null, model: class-string<Hydratable>|null, status: int, idempotent: bool}>
@@ -153,7 +153,7 @@ final class OperationTable
             'method' => 'GET',
             'path' => '/alarm-rules',
             'pathParams' => [],
-            'query' => ['cursor', 'domain_type', 'engines', 'entity_type', 'include_total', 'limit', 'protocol'],
+            'query' => ['cursor', 'domain_type', 'engines', 'entity_type', 'include_total', 'limit', 'os', 'protocol'],
             'body' => null,
             'paged' => true,
             'meta' => null,
@@ -1234,7 +1234,7 @@ final class OperationTable
             'path' => '/server-profiles',
             'pathParams' => [],
             'query' => [],
-            'body' => ['description', 'interval_sysinfo', 'interval_telemetry', 'limit_process_series', 'log_files', 'log_folders', 'logging_disabled', 'name', 'server_led_tag_filter_mode', 'server_led_tag_group_uuids', 'server_led_tagging', 'spool_database_cap_mb', 'spool_horizon_hours', 'spool_logs_cap_mb', 'spool_metrics_cap_mb', 'spool_min_free_disk_mb', 'spool_min_free_disk_percent', 'tag_uuids', 'telemetry_capture_all', 'telemetry_disabled', 'telemetry_options'],
+            'body' => ['description', 'interval_sysinfo', 'interval_telemetry', 'limit_process_series', 'log_files', 'log_folders', 'logging_disabled', 'name', 'os', 'server_led_tag_filter_mode', 'server_led_tag_group_uuids', 'server_led_tagging', 'spool_database_cap_mb', 'spool_horizon_hours', 'spool_logs_cap_mb', 'spool_metrics_cap_mb', 'spool_min_free_disk_mb', 'spool_min_free_disk_percent', 'tag_uuids', 'telemetry_capture_all', 'telemetry_disabled', 'telemetry_options'],
             'paged' => false,
             'meta' => null,
             'model' => \WatchTower15\Api\Generated\Models\ServerProfilesCreate::class,
@@ -1305,7 +1305,7 @@ final class OperationTable
             'method' => 'GET',
             'path' => '/server-profiles',
             'pathParams' => [],
-            'query' => ['cursor', 'include_total', 'limit'],
+            'query' => ['cursor', 'include_total', 'limit', 'os'],
             'body' => null,
             'paged' => true,
             'meta' => null,
@@ -1342,7 +1342,7 @@ final class OperationTable
             'path' => '/server-profiles/{server_profile_uuid}',
             'pathParams' => ['server_profile_uuid'],
             'query' => [],
-            'body' => ['description', 'interval_sysinfo', 'interval_telemetry', 'limit_process_series', 'log_files', 'log_folders', 'logging_disabled', 'name', 'profile_type', 'server_led_tag_filter_mode', 'server_led_tag_group_uuids', 'server_led_tagging', 'spool_database_cap_mb', 'spool_horizon_hours', 'spool_logs_cap_mb', 'spool_metrics_cap_mb', 'spool_min_free_disk_mb', 'spool_min_free_disk_percent', 'sync_tags', 'sync_tags_mode', 'tag_uuids', 'telemetry_capture_all', 'telemetry_disabled', 'telemetry_options'],
+            'body' => ['description', 'interval_sysinfo', 'interval_telemetry', 'limit_process_series', 'log_files', 'log_folders', 'logging_disabled', 'name', 'os', 'profile_type', 'server_led_tag_filter_mode', 'server_led_tag_group_uuids', 'server_led_tagging', 'spool_database_cap_mb', 'spool_horizon_hours', 'spool_logs_cap_mb', 'spool_metrics_cap_mb', 'spool_min_free_disk_mb', 'spool_min_free_disk_percent', 'sync_tags', 'sync_tags_mode', 'tag_uuids', 'telemetry_capture_all', 'telemetry_disabled', 'telemetry_options'],
             'paged' => false,
             'meta' => null,
             'model' => \WatchTower15\Api\Generated\Models\ServerProfilesUpdate::class,
