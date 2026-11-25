@@ -57,6 +57,28 @@ final class MeTest extends TestCase
         self::assertSame(['x' => 1], $me->toArray());
     }
 
+    /** WT15-API-00032: `effectiveScopes` reads `key.effective_scopes` and `roles` reads `user.roles` (a service account's roles, null for a person or an older backend). */
+    public function testK7EffectiveScopesAndRolesAreRead(): void
+    {
+        $decoded = json_decode(Harness::meBody()->getBody()->getContents(), true);
+        self::assertIsArray($decoded);
+        $answer = $decoded['data'];
+        self::assertIsArray($answer);
+
+        $older = \WatchTower15\Api\Me::fromData($answer);
+        self::assertSame([], $older->effectiveScopes);
+        self::assertNull($older->roles);
+
+        $answer['key']['effective_scopes'] = ['tags.view', 'tags.edit', 7];
+        $answer['user']['roles'] = [['uuid' => 'r-1', 'name' => 'Operators'], 'junk'];
+        $me = \WatchTower15\Api\Me::fromData($answer);
+        self::assertSame(['tags.view', 'tags.edit'], $me->effectiveScopes);
+        self::assertSame([['uuid' => 'r-1', 'name' => 'Operators']], $me->roles);
+
+        $answer['user']['roles'] = null;
+        self::assertNull(\WatchTower15\Api\Me::fromData($answer)->roles);
+    }
+
     public function testM2AnUnauthorisedKeyRaisesAuthenticationException(): void
     {
         $h = new Harness();
